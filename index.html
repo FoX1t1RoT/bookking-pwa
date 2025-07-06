@@ -9,7 +9,7 @@
     <title>BookKing - Reading Tracker</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json?v=4.9.4&t=1734725000">
+    <link rel="manifest" href="manifest.json?v=4.9.5&t=1734750000">
     
     <!-- iOS PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -31,17 +31,17 @@
     <link rel="apple-touch-startup-image" href="assets/icons/icon-512.svg">
     
     <!-- Stylesheets -->
-            <link rel="stylesheet" href="assets/css/main-new.css?v=1.0.16">
-        <link rel="stylesheet" href="assets/css/components.css?v=4.9.27">
+    <link rel="stylesheet" href="assets/css/main-new.css?v=1.0.25&t=1734750000">
+    <link rel="stylesheet" href="assets/css/components.css?v=4.9.27&t=1734750000">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
     <link rel="shortcut icon" href="favicon.ico">
     
     <!-- Preload critical resources -->
-    
-    
-            <link rel="preload" href="assets/js/app.js" as="script">
+
+    <link rel="preload" href="assets/js/storage.js?v=4.6.3&t=1734725000" as="script">
+    <link rel="preload" href="assets/js/app.js?v=4.4.11&t=1734747000" as="script">
 </head>
 <body>
     <div class="app-container">
@@ -154,19 +154,18 @@
     </div>
 
     <!-- iOS PWA Installation Prompt -->
-    <div id="iosInstallPrompt" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #000; color: #fff; padding: 10px; text-align: center; z-index: 10000;">
+    <div id="iosInstallPrompt" style="display: none; position: fixed; top: env(safe-area-inset-top); left: env(safe-area-inset-left); right: env(safe-area-inset-right); background: #000; color: #fff; padding: 10px; text-align: center; z-index: 10000;">
         <p>📱 Установите BookKing на главный экран для офлайн работы</p>
         <button onclick="hideIOSPrompt()" style="background: #007AFF; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; margin: 5px;">Понятно</button>
     </div>
 
     <!-- Scripts -->
-    
-    
-            <script src="assets/js/storage.js"></script>
-        <script src="assets/js/components.js"></script>
-        <script src="assets/js/plan-component.js"></script>
-        <script src="assets/js/settings-component.js"></script>
-        <script src="assets/js/app.js"></script>
+
+    <script src="assets/js/storage.js?v=4.6.3&t=1734725000"></script>
+    <script src="assets/js/components.js?v=4.9.15&t=1734750000"></script>
+    <script src="assets/js/plan-component.js?v=4.4.3&t=1734725000"></script>
+    <script src="assets/js/settings-component.js?v=4.4.2&t=1734725000"></script>
+    <script src="assets/js/app.js?v=4.4.11&t=1734747000"></script>
     
     <script>
         // iOS PWA Detection and Installation
@@ -194,180 +193,33 @@
         // Show iOS install prompt after 3 seconds
         setTimeout(showIOSInstallPrompt, 3000);
         
-        // AGGRESSIVE OFFLINE MODE - BLOCK ALL NETWORK IMMEDIATELY
-        console.log('BookKing: AGGRESSIVE OFFLINE MODE - BLOCKING ALL NETWORK');
+        // Simplified offline mode - allow local loading
+        console.log('BookKing: Simplified offline mode enabled');
         
-        // IMMEDIATELY block all network requests before anything else loads
-        (function() {
-            'use strict';
-            
-            // Block fetch immediately
-            window.fetch = function(url, options) {
-                console.log('BookKing: AGGRESSIVE BLOCK - fetch to:', url);
-                return Promise.reject(new Error('AGGRESSIVE OFFLINE MODE - Network blocked'));
-            };
-            
-            // Block XMLHttpRequest immediately
-            XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-                console.log('BookKing: AGGRESSIVE BLOCK - XHR to:', url);
-                throw new Error('AGGRESSIVE OFFLINE MODE - XHR blocked');
-            };
-            
-            // Block WebSocket
-            if (window.WebSocket) {
-                window.WebSocket = function(url, protocols) {
-                    console.log('BookKing: AGGRESSIVE BLOCK - WebSocket to:', url);
-                    throw new Error('AGGRESSIVE OFFLINE MODE - WebSocket blocked');
-                };
-            }
-            
-            // Block EventSource
-            if (window.EventSource) {
-                window.EventSource = function(url) {
-                    console.log('BookKing: AGGRESSIVE BLOCK - EventSource to:', url);
-                    throw new Error('AGGRESSIVE OFFLINE MODE - EventSource blocked');
-                };
-            }
-            
-            // Force navigator.onLine to false
-            try {
-                Object.defineProperty(navigator, 'onLine', {
-                    get: function() { return false; },
-                    configurable: true
-                });
-            } catch (e) {
-                console.log('BookKing: navigator.onLine already set');
-            }
-            
-            // Block window.open
-            window.open = function(url, name, features) {
-                console.log('BookKing: AGGRESSIVE BLOCK - window.open to:', url);
-                return null;
-            };
-            
-            // Block location changes
-            try {
-                const originalHref = Object.getOwnPropertyDescriptor(Location.prototype, 'href');
-                if (originalHref && originalHref.configurable) {
-                    Object.defineProperty(location, 'href', {
-                        get: function() { return originalHref.get.call(this); },
-                        set: function(value) {
-                            if (value && !value.startsWith('#') && !value.startsWith('/')) {
-                                console.log('BookKing: AGGRESSIVE BLOCK - location change to:', value);
-                                return;
-                            }
-                            originalHref.set.call(this, value);
-                        },
-                        configurable: true
-                    });
-                }
-            } catch (e) {
-                console.log('BookKing: location.href already set');
-            }
-            
-            console.log('BookKing: AGGRESSIVE OFFLINE MODE - All network blocked immediately');
-        })();
-        
-        // Register Service Worker for completely offline operation
+        // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
+                navigator.serviceWorker.register('/sw.js?v=1.0.9&t=' + Date.now())
                     .then((registration) => {
-                        console.log('SW registered for AGGRESSIVE offline use: ', registration);
-                        
-                        // Force completely offline mode
-                        if (registration.active) {
-                            registration.active.postMessage({ action: 'FORCE_AGGRESSIVE_OFFLINE' });
-                            console.log('Service Worker is active and AGGRESSIVE offline ready');
-                        }
-                        
-                        // Listen for updates but stay offline
-                        registration.addEventListener('updatefound', () => {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('New service worker installed, staying AGGRESSIVE offline');
-                                    newWorker.postMessage({ action: 'SKIP_WAITING' });
-                                    window.location.reload();
-                                }
-                            });
-                        });
-                        
-                        // Handle service worker updates
-                        navigator.serviceWorker.addEventListener('controllerchange', () => {
-                            console.log('Service Worker controller changed - app is AGGRESSIVE offline');
-                            if (navigator.serviceWorker.controller) {
-                                navigator.serviceWorker.controller.postMessage({ action: 'FORCE_AGGRESSIVE_OFFLINE' });
-                            }
-                        });
-                        
-                        // Check offline status
-                        if (navigator.serviceWorker.controller) {
-                            navigator.serviceWorker.controller.postMessage({ action: 'CHECK_AGGRESSIVE_OFFLINE_STATUS' });
-                        }
+                        console.log('SW registered: ', registration);
                     })
                     .catch((registrationError) => {
                         console.log('SW registration failed: ', registrationError);
                     });
             });
-        } else {
-            console.log('Service Worker not supported - AGGRESSIVE offline functionality disabled');
         }
+        console.log('Service Worker disabled for debugging');
         
-        // Listen for online/offline events but stay completely offline
+        // Basic offline monitoring
         window.addEventListener('online', () => {
-            console.log('BookKing: Network available but staying AGGRESSIVE offline');
+            console.log('BookKing: Network available');
         });
         
         window.addEventListener('offline', () => {
-            console.log('BookKing: Network unavailable - continuing AGGRESSIVE offline');
+            console.log('BookKing: Network unavailable');
         });
         
-        // Prevent any network requests from the app
-        window.addEventListener('beforeunload', () => {
-            console.log('BookKing: App unloading - AGGRESSIVE offline mode maintained');
-        });
-        
-        // Block any remaining network attempts
-        window.addEventListener('error', function(event) {
-            if (event.target && event.target.src) {
-                console.log('BookKing: AGGRESSIVE BLOCK - resource loading:', event.target.src);
-                event.preventDefault();
-            }
-        });
-        
-        // Periodic re-blocking to ensure nothing gets through
-        setInterval(() => {
-            // Re-block fetch
-            window.fetch = function(url, options) {
-                console.log('BookKing: PERIODIC BLOCK - fetch to:', url);
-                return Promise.reject(new Error('AGGRESSIVE OFFLINE MODE - Network blocked'));
-            };
-            
-            // Re-block XHR
-            XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-                console.log('BookKing: PERIODIC BLOCK - XHR to:', url);
-                throw new Error('AGGRESSIVE OFFLINE MODE - XHR blocked');
-            };
-            
-            // Re-block WebSocket
-            if (window.WebSocket) {
-                window.WebSocket = function(url, protocols) {
-                    console.log('BookKing: PERIODIC BLOCK - WebSocket to:', url);
-                    throw new Error('AGGRESSIVE OFFLINE MODE - WebSocket blocked');
-                };
-            }
-            
-            // Re-block EventSource
-            if (window.EventSource) {
-                window.EventSource = function(url) {
-                    console.log('BookKing: PERIODIC BLOCK - EventSource to:', url);
-                    throw new Error('AGGRESSIVE OFFLINE MODE - EventSource blocked');
-                };
-            }
-        }, 500); // Check every 500ms
-        
-        console.log('BookKing: AGGRESSIVE OFFLINE MODE - All network access completely blocked with periodic enforcement');
+        console.log('BookKing: App ready - simplified offline mode');
     </script>
 </body>
 </html> 

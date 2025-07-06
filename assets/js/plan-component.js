@@ -1,6 +1,6 @@
 // Plan Component Extension for BookKing
 BookKingComponents.prototype.loadPlanScreen = function() {
-    this.updateHeader('Plan', false);
+    this.updateHeader('', false);
     this.renderPlanScreen();
 };
 
@@ -9,6 +9,7 @@ BookKingComponents.prototype.renderPlanScreen = function() {
     if (!container) return;
 
     container.innerHTML = `
+        <h1 class="page-title">Plan</h1>
         <div class="calendar-container">
             <div class="calendar-header">
                 <button class="calendar-nav-btn" id="prevMonth">‹</button>

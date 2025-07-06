@@ -1,10 +1,6 @@
 // BookKing Components Module
 class BookKingComponents {
     constructor(storage) {
-        if (!storage) {
-            console.error('Storage is required for BookKingComponents');
-            throw new Error('Storage is required for BookKingComponents');
-        }
         this.storage = storage;
         this.currentTab = 'read';
         this.currentTrackTab = 'goals';
@@ -231,7 +227,7 @@ class BookKingComponents {
         } else {
         if (headerTitle) headerTitle.textContent = title;
             if (headerTitle) {
-                if (title === 'Book Info' || title === 'Add New Book') {
+                if (title === 'Book Info' || title === 'Add New Book' || title === 'Reading Sessions' || title === 'New Session') {
                     headerTitle.classList.add('centered');
                 } else {
                     headerTitle.classList.remove('centered');
@@ -256,6 +252,20 @@ class BookKingComponents {
                     headerTitle.classList.add('book-info-header');
                 } else {
                     headerTitle.classList.remove('book-info-header');
+                }
+                
+                // Add special class for Reading Sessions header
+                if (title === 'Reading Sessions') {
+                    headerTitle.classList.add('reading-sessions-header');
+                } else {
+                    headerTitle.classList.remove('reading-sessions-header');
+                }
+                
+                // Add special class for New Session header
+                if (title === 'New Session') {
+                    headerTitle.classList.add('new-session-header');
+                } else {
+                    headerTitle.classList.remove('new-session-header');
                 }
             }
         }
@@ -1329,7 +1339,7 @@ class BookKingComponents {
 
     // Track Screen  
     loadTrackScreen() {
-        this.updateHeader('Track', false);
+        this.updateHeader('', false);
         this.renderTrackScreen();
     }
 
@@ -1338,6 +1348,7 @@ class BookKingComponents {
         if (!container) return;
 
         container.innerHTML = `
+            <h1 class="page-title">Track</h1>
             <div class="track-header">
                 <div class="track-tabs">
                     <button class="track-tab ${this.currentTrackTab === 'goals' ? 'active' : ''}" data-track-tab="goals">Goals</button>
@@ -1641,7 +1652,7 @@ class BookKingComponents {
 
     // Plan Screen
     loadPlanScreen() {
-                    this.updateHeader('Plan', false);
+                    this.updateHeader('', false);
         // Check if plan component extension is loaded
         if (typeof this.renderPlanScreen === 'function') {
             this.renderPlanScreen();
@@ -1665,6 +1676,7 @@ class BookKingComponents {
         const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         container.innerHTML = `
+            <h1 class="page-title">Plan</h1>
             <div class="calendar-container" style="background:#000;">
                 <div class="calendar-header" style="background:#000;">
                     <div class="calendar-month">${this.getMonthName(this.selectedDate)} ${this.selectedDate.getFullYear()}</div>
@@ -1738,7 +1750,7 @@ class BookKingComponents {
 
     // Settings Screen
     loadSettingsScreen() {
-                    this.updateHeader('Settings', false);
+                    this.updateHeader('', false);
         // Check if settings component extension is loaded
         if (typeof this.renderSettingsScreen === 'function') {
             this.renderSettingsScreen();
@@ -1762,6 +1774,7 @@ class BookKingComponents {
         const goals = this.storage.getGoals();
 
         container.innerHTML = `
+            <h1 class="page-title">Settings</h1>
             <div class="settings-section">
                 <div class="settings-section-title">Goals</div>
                 <div class="settings-card">

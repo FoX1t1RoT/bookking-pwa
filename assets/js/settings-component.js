@@ -1,6 +1,6 @@
 // Settings Component Extension for BookKing
 BookKingComponents.prototype.loadSettingsScreen = function() {
-    this.updateHeader('Settings', false);
+    this.updateHeader('', false);
     this.renderSettingsScreen();
 };
 
@@ -11,6 +11,7 @@ BookKingComponents.prototype.renderSettingsScreen = function() {
     const goals = this.storage.getGoals();
 
     container.innerHTML = `
+        <h1 class="page-title">Settings</h1>
         <div class="settings-section">
             <div class="settings-section-title">Goals</div>
             <div class="settings-card">

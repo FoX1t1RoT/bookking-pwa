@@ -1,8 +1,8 @@
 // BookKing Service Worker - iOS Optimized AGGRESSIVE OFFLINE MODE
 // Version: aggressive-offline-v1.0.7
 
-const CACHE_NAME = 'bookking-aggressive-offline-v1.0.11';
-const OFFLINE_URL = '/index.html';
+const CACHE_NAME = 'bookking-aggressive-offline-v1.0.7';
+const OFFLINE_URL = '/offline.html';
 
 // AGGRESSIVE OFFLINE MODE - Block all network requests
 let AGGRESSIVE_OFFLINE_MODE = true;
@@ -11,14 +11,16 @@ let AGGRESSIVE_OFFLINE_MODE = true;
 const CACHE_FILES = [
     '/',
     '/index.html',
-    '/manifest.json',
+    '/manifest.json?v=4.9.5&t=1734750000',
+    '/offline.html',
     '/favicon.ico',
-    '/assets/css/main-new.css?v=1.0.16',
-    '/assets/css/components.css?v=4.9.27',
-    '/assets/js/components.js',
-    '/assets/js/plan-component.js',
-    '/assets/js/settings-component.js',
-    '/assets/js/app.js',
+    '/assets/css/main-new.css?v=1.0.25&t=1734750000',
+    '/assets/css/components.css?v=4.9.27&t=1734750000',
+    '/assets/js/storage.js?v=4.6.3&t=1734725000',
+    '/assets/js/components.js?v=4.9.15&t=1734750000',
+    '/assets/js/plan-component.js?v=4.4.3&t=1734725000',
+    '/assets/js/settings-component.js?v=4.4.2&t=1734725000',
+    '/assets/js/app.js?v=4.4.11&t=1734747000',
     '/assets/icons/favicon.svg',
     '/assets/icons/icon-192.svg',
     '/assets/icons/icon-512.svg',
@@ -96,20 +98,20 @@ self.addEventListener('fetch', (event) => {
     if (AGGRESSIVE_OFFLINE_MODE) {
         console.log('BookKing SW: iOS AGGRESSIVE OFFLINE - Fetch request for:', url.pathname);
         
-        event.respondWith(
+    event.respondWith(
             caches.match(event.request)
-                .then((response) => {
-                    if (response) {
+            .then((response) => {
+                if (response) {
                         console.log('BookKing SW: iOS AGGRESSIVE OFFLINE - Serving from cache:', url.pathname);
-                        return response;
+                    return response;
                     } else {
                         // Try to match without query parameters
                         const urlWithoutParams = url.pathname;
                         console.log('BookKing SW: iOS AGGRESSIVE OFFLINE - Trying without params:', urlWithoutParams);
                         return caches.match(urlWithoutParams);
-                    }
+                }
                 })
-                .then((response) => {
+                    .then((response) => {
                     if (response) {
                         console.log('BookKing SW: iOS AGGRESSIVE OFFLINE - Serving from cache (no params):', url.pathname);
                         return response;
@@ -160,7 +162,7 @@ self.addEventListener('message', (event) => {
                 status: 'AGGRESSIVE_OFFLINE_ACTIVE',
                 mode: AGGRESSIVE_OFFLINE_MODE 
             });
-        }
+    }
     }
     
     if (event.data && event.data.action === 'SKIP_WAITING') {

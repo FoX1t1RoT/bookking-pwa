@@ -53,14 +53,15 @@ body {
     display: flex;
     align-items: center;
     padding: 12px 16px;
+    padding-top: max(20px, calc(env(safe-area-inset-top) + 8px));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
     background-color: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     min-height: 56px;
     position: sticky;
     top: 0;
     z-index: 100;
-    /* iPhone safe area padding - smaller offset */
-    padding-top: max(8px, calc(env(safe-area-inset-top) + 4px));
 }
 
 .header-left {
@@ -115,20 +116,36 @@ body {
 /* Special styling for Add New Book header */
 .header-title.add-book-header {
     padding-right: 0 !important;
+    padding-top: max(12px, calc(env(safe-area-inset-top) + 8px)) !important;
 }
 
 /* Special styling for Book Info header */
 .header-title.book-info-header {
     padding-right: 0 !important;
+    padding-top: max(12px, calc(env(safe-area-inset-top) + 8px)) !important;
+}
+
+/* Special styling for Reading Sessions header */
+.header-title.reading-sessions-header {
+    padding-right: 0 !important;
+    padding-top: max(12px, calc(env(safe-area-inset-top) + 8px)) !important;
+}
+
+/* Special styling for New Session header */
+.header-title.new-session-header {
+    padding-right: 0 !important;
+    padding-top: max(12px, calc(env(safe-area-inset-top) + 8px)) !important;
 }
 
 .header-title.centered {
     text-align: center !important;
     padding-left: 0 !important;
+    padding-right: 0 !important;
     width: 100%;
     margin: 0 auto;
     position: relative !important;
     z-index: 1;
+    margin-top: max(8px, calc(env(safe-area-inset-top) / 2)) !important;
 }
 
 .add-button {
@@ -161,8 +178,19 @@ body {
 .main-content {
     flex: 1;
     padding: 16px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
     overflow-y: auto;
-    padding-bottom: 80px; /* Space for tab navigation */
+    padding-bottom: 50px; /* Space for tab navigation */
+}
+
+/* Page Title */
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 24px 0;
+    text-align: left;
 }
 
 /* Search Bar */
@@ -244,7 +272,7 @@ body {
     background-color: var(--tab-bg);
     border-top: 1px solid var(--border-color);
     display: flex;
-    padding: 8px 0 env(safe-area-inset-bottom);
+    padding: 2px max(0px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(0px, env(safe-area-inset-left));
 }
 
 .tab-item {
@@ -253,14 +281,14 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 18px 4px;
+    padding: 8px 4px;
     background: none;
     border: none;
     cursor: pointer;
     color: var(--text-secondary);
     transition: all 0.2s ease;
-    border-radius: 8px;
-    margin: 4px;
+    border-radius: 4px;
+    margin: 1px;
     position: relative;
 }
 
@@ -271,22 +299,22 @@ body {
 .tab-item.active::before {
     content: '';
     position: absolute;
-    top: -4px;
+    top: -2px;
     left: 50%;
     transform: translateX(-50%);
-    width: 24px;
+    width: 16px;
     height: 2px;
     background-color: var(--accent-color);
     border-radius: 1px;
 }
 
 .tab-icon {
-    font-size: 24px;
-    margin-bottom: 2px;
+    font-size: 18px;
+    margin-bottom: 1px;
 }
 
 .tab-label {
-    font-size: 10px;
+    font-size: 8px;
     font-weight: 500;
 }
 
@@ -352,6 +380,9 @@ body {
 @media (max-width: 375px) {
     .main-content {
         padding: 12px;
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+        padding-bottom: 45px; /* Less space for smaller tab navigation */
     }
     
     .search-input {
@@ -363,6 +394,24 @@ body {
     .app-container {
         border-left: 1px solid var(--border-color);
         border-right: 1px solid var(--border-color);
+    }
+}
+
+/* iPhone X+ notch support for landscape orientation */
+@media (orientation: landscape) {
+    .app-header {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+    
+    .main-content {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+    
+    .tab-navigation {
+        padding-left: max(4px, env(safe-area-inset-left));
+        padding-right: max(4px, env(safe-area-inset-right));
     }
 }
 

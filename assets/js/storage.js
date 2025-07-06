@@ -1,166 +1,170 @@
 // BookKing Storage Module
 class BookKingStorage {
     constructor() {
-        this.data = this.loadData();
+        this.storageKey = 'bookking_data';
+        this.init();
     }
 
-    loadData() {
-        try {
-            const saved = localStorage.getItem('bookking-data');
-            return saved ? JSON.parse(saved) : this.getDefaultData();
-        } catch (error) {
-            console.error('Error loading data:', error);
-            return this.getDefaultData();
+    // Initialize storage with default data structure
+    init() {
+        if (!localStorage.getItem(this.storageKey)) {
+            const defaultData = {
+                books: [],
+                sessions: [],
+                goals: {
+                    dailyPages: 0,
+                    weeklyPages: 0,
+                    monthlyBooks: 0,
+                    yearlyBooks: 0
+                },
+                settings: {
+                    theme: 'light'
+                },
+                lastSync: new Date().toISOString()
+            };
+            this.saveData(defaultData);
         }
     }
 
+    // Get all data from storage
+    getData() {
+        try {
+            const data = localStorage.getItem(this.storageKey);
+            return data ? JSON.parse(data) : null;
+        } catch (error) {
+            console.error('Error reading from storage:', error);
+            return null;
+        }
+    }
+
+    // Save data to storage
     saveData(data) {
         try {
-            this.data = data;
-            localStorage.setItem('bookking-data', JSON.stringify(data));
-        } catch (error) {
-            console.error('Error saving data:', error);
-        }
-    }
-
-    getDefaultData() {
-        return {
-            books: [],
-            sessions: [],
-            goals: {
-                dailyPages: 20,
-                weeklyPages: 100,
-                monthlyBooks: 2,
-                yearlyBooks: 12
-            },
-            settings: {
-                theme: 'light',
-                notifications: true
-            }
-        };
-    }
-
-    // Books methods
-    getBooks() {
-        return this.data.books || [];
-    }
-
-    addBook(book) {
-        book.id = this.generateId();
-        book.createdAt = new Date().toISOString();
-        book.status = 'active';
-        this.data.books.push(book);
-        this.saveData(this.data);
-        return book;
-    }
-
-    updateBook(bookId, updates) {
-        const book = this.data.books.find(b => b.id === bookId);
-        if (book) {
-            Object.assign(book, updates);
-            this.saveData(this.data);
-        }
-        return book;
-    }
-
-    deleteBook(bookId) {
-        this.data.books = this.data.books.filter(b => b.id !== bookId);
-        this.data.sessions = this.data.sessions.filter(s => s.bookId !== bookId);
-        this.saveData(this.data);
-    }
-
-    // Sessions methods
-    getSessions(bookId = null) {
-        if (bookId) {
-            return this.data.sessions.filter(s => s.bookId === bookId) || [];
-        }
-        return this.data.sessions || [];
-    }
-
-    addSession(session) {
-        session.id = this.generateId();
-        session.createdAt = new Date().toISOString();
-        this.data.sessions.push(session);
-        this.saveData(this.data);
-        return session;
-    }
-
-    updateSession(sessionId, updates) {
-        const session = this.data.sessions.find(s => s.id === sessionId);
-        if (session) {
-            Object.assign(session, updates);
-            this.saveData(this.data);
-        }
-        return session;
-    }
-
-    deleteSession(sessionId) {
-        this.data.sessions = this.data.sessions.filter(s => s.id !== sessionId);
-        this.saveData(this.data);
-    }
-
-    // Goals methods
-    getGoals() {
-        return this.data.goals || {
-            dailyPages: 20,
-            dailyMinutes: 30,
-            weeklyBooks: 1
-        };
-    }
-
-    updateGoals(goals) {
-        this.data.goals = { ...this.data.goals, ...goals };
-        this.saveData(this.data);
-    }
-
-    // Settings methods
-    getSettings() {
-        return this.data.settings || {
-            theme: 'light',
-            notifications: true
-        };
-    }
-
-    updateSettings(settings) {
-        this.data.settings = { ...this.data.settings, ...settings };
-        this.saveData(this.data);
-    }
-
-    // Utility methods
-    generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
-    }
-
-    getData() {
-        return this.data;
-    }
-
-    clearAllData() {
-        this.data = this.getDefaultData();
-        this.saveData(this.data);
-    }
-
-    // Export/Import
-    exportData() {
-        return JSON.stringify(this.data, null, 2);
-    }
-
-    importData(jsonData) {
-        try {
-            const data = JSON.parse(jsonData);
-            this.data = data;
-            this.saveData(this.data);
+            data.lastSync = new Date().toISOString();
+            localStorage.setItem(this.storageKey, JSON.stringify(data));
             return true;
         } catch (error) {
-            console.error('Error importing data:', error);
+            console.error('Error saving to storage:', error);
             return false;
         }
     }
 
+    // Book management methods
+    addBook(book) {
+        const data = this.getData();
+        const newBook = {
+            id: this.generateId(),
+            title: book.title,
+            author: book.author,
+            firstPage: parseInt(book.firstPage) || 1,
+            lastPage: parseInt(book.lastPage),
+            currentPage: parseInt(book.firstPage) || 1,
+            status: 'reading',
+            dateAdded: new Date().toISOString(),
+            dateStarted: null,
+            dateFinished: null,
+            totalPages: parseInt(book.lastPage) - parseInt(book.firstPage) + 1,
+            cover: book.cover || null // Store book cover image
+        };
+        
+        data.books.push(newBook);
+        this.saveData(data);
+        return newBook;
+    }
+
+    getBooks(status = null) {
+        const data = this.getData();
+        if (!data || !data.books) return [];
+        
+        if (status) {
+            return data.books.filter(book => book.status === status);
+        }
+        return data.books;
+    }
+
+    updateBook(bookId, updates) {
+        const data = this.getData();
+        const bookIndex = data.books.findIndex(book => book.id === bookId);
+        
+        if (bookIndex !== -1) {
+            data.books[bookIndex] = { ...data.books[bookIndex], ...updates };
+            this.saveData(data);
+            return data.books[bookIndex];
+        }
+        return null;
+    }
+
+    deleteBook(bookId) {
+        const data = this.getData();
+        data.books = data.books.filter(book => book.id !== bookId);
+        this.saveData(data);
+        return true;
+    }
+
+    // Reading session methods
+    addSession(session) {
+        const data = this.getData();
+        const newSession = {
+            id: this.generateId(),
+            bookId: session.bookId,
+            startTime: session.startTime,
+            endTime: session.endTime,
+            duration: session.duration || 0, // Save duration in seconds
+            startPage: session.startPage || null,
+            endPage: session.endPage || null,
+            pagesRead: parseInt(session.pagesRead) || 0,
+            readingSpeed: session.readingSpeed || 0,
+            notes: session.notes || '',
+            date: new Date(session.startTime).toDateString()
+        };
+        
+        data.sessions.push(newSession);
+        this.saveData(data);
+        return newSession;
+    }
+
+    getSessions(bookId = null, date = null) {
+        const data = this.getData();
+        if (!data || !data.sessions) return [];
+        
+        let sessions = data.sessions;
+        
+        if (bookId) {
+            sessions = sessions.filter(session => session.bookId === bookId);
+        }
+        
+        if (date) {
+            sessions = sessions.filter(session => session.date === new Date(date).toDateString());
+        }
+        
+        return sessions.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+    }
+
+    // Goals management
+    getGoals() {
+        const data = this.getData();
+        return data ? data.goals : {
+            dailyPages: 0,
+            weeklyPages: 0,
+            monthlyBooks: 0,
+            yearlyBooks: 0
+        };
+    }
+
+    updateGoals(goals) {
+        const data = this.getData();
+        data.goals = { ...data.goals, ...goals };
+        this.saveData(data);
+        return data.goals;
+    }
+
     // Statistics methods
     getReadingStats(period = 'week') {
-        const sessions = this.data.sessions || [];
+        const data = this.getData();
+        if (!data || !data.sessions) return this.getEmptyStats();
+
         const now = new Date();
+        const sessions = data.sessions;
         
         switch (period) {
             case 'day':
@@ -178,25 +182,22 @@ class BookKingStorage {
 
     getDayStats(sessions, date) {
         const targetDate = new Date(date).toDateString();
-        const daySessions = sessions.filter(session => {
-            const sessionDate = new Date(session.startTime || session.createdAt);
-            return sessionDate.toDateString() === targetDate;
-        });
+        const daySessions = sessions.filter(session => session.date === targetDate);
         
         return {
-            totalPages: daySessions.reduce((sum, session) => sum + (session.pagesRead || 0), 0),
+            totalPages: daySessions.reduce((sum, session) => sum + session.pagesRead, 0),
             totalTime: daySessions.reduce((sum, session) => {
+                // Use saved duration if available, otherwise calculate from timestamps
                 if (session.duration !== undefined) {
-                    return sum + (session.duration / 60); // convert seconds to minutes
-                } else if (session.startTime && session.endTime) {
+                    return sum + (session.duration / 60); // convert seconds to minutes (keep decimals)
+                } else {
                     const duration = new Date(session.endTime) - new Date(session.startTime);
-                    return sum + (duration / 1000 / 60); // minutes
+                    return sum + (duration / 1000 / 60); // minutes (keep decimals)
                 }
-                return sum;
             }, 0),
             totalSessions: daySessions.length,
             averageSpeed: daySessions.length > 0 
-                ? daySessions.reduce((sum, session) => sum + (session.readingSpeed || 0), 0) / daySessions.length 
+                ? daySessions.reduce((sum, session) => sum + session.readingSpeed, 0) / daySessions.length 
                 : 0
         };
     }
@@ -233,36 +234,35 @@ class BookKingStorage {
         const month = date.getMonth();
         const year = date.getFullYear();
         const monthSessions = sessions.filter(session => {
-            const sessionDate = new Date(session.startTime || session.createdAt);
+            const sessionDate = new Date(session.startTime);
             return sessionDate.getMonth() === month && sessionDate.getFullYear() === year;
         });
 
-        // Array by days of month
+        // Массив по дням месяца
         const days = [];
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         for (let d = 1; d <= daysInMonth; d++) {
             const daySessions = monthSessions.filter(session => {
-                const sessionDate = new Date(session.startTime || session.createdAt);
+                const sessionDate = new Date(session.startTime);
                 return sessionDate.getDate() === d;
             });
             days.push({
                 day: d,
-                totalPages: daySessions.reduce((sum, s) => sum + (s.pagesRead || 0), 0),
+                totalPages: daySessions.reduce((sum, s) => sum + s.pagesRead, 0),
                 totalTime: daySessions.reduce((sum, s) => sum + (s.duration ? s.duration / 60 : 0), 0),
                 totalSessions: daySessions.length
             });
         }
 
         return {
-            totalPages: monthSessions.reduce((sum, session) => sum + (session.pagesRead || 0), 0),
+            totalPages: monthSessions.reduce((sum, session) => sum + session.pagesRead, 0),
             totalTime: monthSessions.reduce((sum, session) => {
                 if (session.duration !== undefined) {
                     return sum + (session.duration / 60);
-                } else if (session.startTime && session.endTime) {
+                } else {
                     const duration = new Date(session.endTime) - new Date(session.startTime);
                     return sum + (duration / 1000 / 60);
                 }
-                return sum;
             }, 0),
             totalSessions: monthSessions.length,
             booksCompleted: this.getBooksCompletedInPeriod(month, year),
@@ -273,20 +273,20 @@ class BookKingStorage {
     getYearStats(sessions, date) {
         const year = date.getFullYear();
         const yearSessions = sessions.filter(session => {
-            const sessionDate = new Date(session.startTime || session.createdAt);
+            const sessionDate = new Date(session.startTime);
             return sessionDate.getFullYear() === year;
         });
 
-        // Array by months
+        // Массив по месяцам
         const months = [];
         for (let m = 0; m < 12; m++) {
             const monthSessions = yearSessions.filter(session => {
-                const sessionDate = new Date(session.startTime || session.createdAt);
+                const sessionDate = new Date(session.startTime);
                 return sessionDate.getMonth() === m;
             });
             months.push({
                 month: m + 1,
-                totalPages: monthSessions.reduce((sum, s) => sum + (s.pagesRead || 0), 0),
+                totalPages: monthSessions.reduce((sum, s) => sum + s.pagesRead, 0),
                 totalTime: monthSessions.reduce((sum, s) => sum + (s.duration ? s.duration / 60 : 0), 0),
                 totalSessions: monthSessions.length,
                 booksCompleted: this.getBooksCompletedInPeriod(m, year)
@@ -294,15 +294,14 @@ class BookKingStorage {
         }
 
         return {
-            totalPages: yearSessions.reduce((sum, session) => sum + (session.pagesRead || 0), 0),
+            totalPages: yearSessions.reduce((sum, session) => sum + session.pagesRead, 0),
             totalTime: yearSessions.reduce((sum, session) => {
                 if (session.duration !== undefined) {
                     return sum + (session.duration / 60);
-                } else if (session.startTime && session.endTime) {
+                } else {
                     const duration = new Date(session.endTime) - new Date(session.startTime);
                     return sum + (duration / 1000 / 60);
                 }
-                return sum;
             }, 0),
             totalSessions: yearSessions.length,
             booksCompleted: this.getBooksCompletedInYear(year),
@@ -311,7 +310,10 @@ class BookKingStorage {
     }
 
     getBooksCompletedInPeriod(month, year) {
-        return this.data.books.filter(book => {
+        const data = this.getData();
+        if (!data || !data.books) return 0;
+        
+        return data.books.filter(book => {
             if ((book.status !== 'finished' && book.status !== 'archived') || !book.dateFinished) return false;
             const finishedDate = new Date(book.dateFinished);
             return finishedDate.getMonth() === month && finishedDate.getFullYear() === year;
@@ -319,7 +321,10 @@ class BookKingStorage {
     }
 
     getBooksCompletedInYear(year) {
-        return this.data.books.filter(book => {
+        const data = this.getData();
+        if (!data || !data.books) return 0;
+        
+        return data.books.filter(book => {
             if ((book.status !== 'finished' && book.status !== 'archived') || !book.dateFinished) return false;
             const finishedDate = new Date(book.dateFinished);
             return finishedDate.getFullYear() === year;
@@ -334,9 +339,115 @@ class BookKingStorage {
             averageSpeed: 0
         };
     }
+
+    // Backup and restore methods
+    createBackup() {
+        const data = this.getData();
+        const backup = {
+            ...data,
+            backupDate: new Date().toISOString(),
+            version: '1.0'
+        };
+        
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bookking-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        return true;
+    }
+
+    restoreFromBackup(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    
+                    // Validate backup structure
+                    if (!backup.books || !backup.sessions || !backup.goals) {
+                        throw new Error('Invalid backup format');
+                    }
+                    
+                    // Restore data
+                    this.saveData(backup);
+                    resolve(true);
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            
+            reader.onerror = () => reject(new Error('Failed to read backup file'));
+            reader.readAsText(file);
+        });
+    }
+
+    // Utility methods
+    generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    searchBooks(query) {
+        const data = this.getData();
+        if (!data || !data.books || !query) return data.books;
+        
+        const searchTerm = query.toLowerCase();
+        return data.books.filter(book => 
+            book.title.toLowerCase().includes(searchTerm) ||
+            book.author.toLowerCase().includes(searchTerm)
+        );
+    }
+
+    // Clear all data (for testing/reset)
+    clearAllData() {
+        localStorage.removeItem(this.storageKey);
+        this.init();
+        return true;
+    }
+
+    // Sync pending data when coming back online
+    syncPendingData() {
+        const data = this.getData();
+        if (data) {
+            // Update last sync timestamp
+            data.lastSync = new Date().toISOString();
+            this.saveData(data);
+            console.log('BookKing: Data synced successfully');
+        }
+    }
+
+    // Check if data is fresh (synced within last 24 hours)
+    isDataFresh() {
+        const data = this.getData();
+        if (!data || !data.lastSync) return false;
+        
+        const lastSync = new Date(data.lastSync);
+        const now = new Date();
+        const hoursSinceSync = (now - lastSync) / (1000 * 60 * 60);
+        
+        return hoursSinceSync < 24;
+    }
+
+    // Get offline status information
+    getOfflineStatus() {
+        const data = this.getData();
+        return {
+            hasData: !!data,
+            lastSync: data ? data.lastSync : null,
+            isFresh: this.isDataFresh(),
+            booksCount: data ? data.books.length : 0,
+            sessionsCount: data ? data.sessions.length : 0
+        };
+    }
 }
 
-// Initialize and export
-console.log('Initializing BookKingStorage...');
-window.bookKingStorage = new BookKingStorage();
-console.log('BookKingStorage initialized:', window.bookKingStorage); 
+// Export storage instance
+const bookKingStorage = new BookKingStorage();
+window.bookKingStorage = bookKingStorage; 
