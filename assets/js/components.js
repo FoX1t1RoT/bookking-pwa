@@ -2063,7 +2063,7 @@ class BookKingComponents {
         toast.textContent = message;
         toast.style.cssText = `
             position: fixed;
-            top: 20px;
+            top: max(20px, calc(env(safe-area-inset-top) + 8px));
             left: 50%;
             transform: translateX(-50%);
             background: ${type === 'error' ? '#ff3b30' : '#30d158'};

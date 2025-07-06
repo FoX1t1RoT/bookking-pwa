@@ -261,7 +261,7 @@ class BookKingApp {
     showUpdateNotification() {
         const notification = document.createElement('div');
         notification.innerHTML = `
-            <div style="position: fixed; top: 0; left: 0; right: 0; background: #007AFF; color: white; padding: 12px; text-align: center; z-index: 9999;">
+            <div style="position: fixed; top: max(0px, env(safe-area-inset-top)); left: 0; right: 0; background: #007AFF; color: white; padding: 12px; text-align: center; z-index: 9999;">
                 <span>New version available!</span>
                 <button onclick="window.location.reload()" style="background: white; color: #007AFF; border: none; padding: 4px 12px; margin-left: 12px; border-radius: 4px; cursor: pointer;">Update</button>
             </div>
@@ -308,7 +308,7 @@ class BookKingApp {
         indicator.innerHTML = `
             <div style="
                 position: fixed;
-                top: 0;
+                top: max(0px, env(safe-area-inset-top));
                 left: 0;
                 right: 0;
                 background: #FF9500;
