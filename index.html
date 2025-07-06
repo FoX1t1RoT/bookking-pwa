@@ -270,7 +270,7 @@
         // Register Service Worker for completely offline operation
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js?v=aggressive-offline-v1.0.7&t=1734750000')
+                navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
                         console.log('SW registered for AGGRESSIVE offline use: ', registration);
                         

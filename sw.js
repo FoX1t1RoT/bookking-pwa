@@ -1,8 +1,8 @@
 // BookKing Service Worker - iOS Optimized AGGRESSIVE OFFLINE MODE
 // Version: aggressive-offline-v1.0.7
 
-const CACHE_NAME = 'bookking-aggressive-offline-v1.0.7';
-const OFFLINE_URL = '/offline.html';
+const CACHE_NAME = 'bookking-aggressive-offline-v1.0.8';
+const OFFLINE_URL = '/index.html';
 
 // AGGRESSIVE OFFLINE MODE - Block all network requests
 let AGGRESSIVE_OFFLINE_MODE = true;
@@ -11,17 +11,14 @@ let AGGRESSIVE_OFFLINE_MODE = true;
 const CACHE_FILES = [
     '/',
     '/index.html',
-    '/manifest.json?v=4.9.4&t=1734725000',
-    '/offline.html',
+    '/manifest.json',
     '/favicon.ico',
-    '/assets/css/main-new.css?v=1.0.13&t=1734747000',
-    '/assets/css/components.css?v=4.9.26&t=1734725000',
-    '/assets/js/offline-enforcer.js?v=1.1.0&t=1734748000',
-    '/assets/js/storage.js?v=4.6.3&t=1734725000',
-    '/assets/js/components.js?v=4.9.12&t=1734725000',
-    '/assets/js/plan-component.js?v=4.4.2&t=1734725000',
-    '/assets/js/settings-component.js?v=4.4.1&t=1734725000',
-    '/assets/js/app.js?v=4.4.11&t=1734747000',
+    '/assets/css/main-new.css',
+    '/assets/css/components.css',
+    '/assets/js/components.js',
+    '/assets/js/plan-component.js',
+    '/assets/js/settings-component.js',
+    '/assets/js/app.js',
     '/assets/icons/favicon.svg',
     '/assets/icons/icon-192.svg',
     '/assets/icons/icon-512.svg',
