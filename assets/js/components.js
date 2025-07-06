@@ -1,6 +1,10 @@
 // BookKing Components Module
 class BookKingComponents {
     constructor(storage) {
+        if (!storage) {
+            console.error('Storage is required for BookKingComponents');
+            throw new Error('Storage is required for BookKingComponents');
+        }
         this.storage = storage;
         this.currentTab = 'read';
         this.currentTrackTab = 'goals';

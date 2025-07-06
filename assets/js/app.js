@@ -10,6 +10,10 @@ class BookKingApp {
     async init() {
         try {
             // Initialize storage
+            if (!window.bookKingStorage) {
+                console.error('BookKingStorage not found, creating fallback');
+                window.bookKingStorage = new BookKingStorage();
+            }
             this.storage = window.bookKingStorage;
             
             // Initialize components
