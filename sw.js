@@ -1,7 +1,7 @@
 // BookKing Service Worker - iOS Optimized AGGRESSIVE OFFLINE MODE
 // Version: aggressive-offline-v1.0.7
 
-const CACHE_NAME = 'bookking-aggressive-offline-v1.0.10';
+const CACHE_NAME = 'bookking-aggressive-offline-v1.0.11';
 const OFFLINE_URL = '/index.html';
 
 // AGGRESSIVE OFFLINE MODE - Block all network requests
@@ -13,7 +13,7 @@ const CACHE_FILES = [
     '/index.html',
     '/manifest.json',
     '/favicon.ico',
-    '/assets/css/main-new.css?v=1.0.15',
+    '/assets/css/main-new.css?v=1.0.16',
     '/assets/css/components.css?v=4.9.27',
     '/assets/js/components.js',
     '/assets/js/plan-component.js',
