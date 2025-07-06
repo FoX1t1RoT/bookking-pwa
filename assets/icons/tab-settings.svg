@@ -1,0 +1,20 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Классическая iPhone шестеренка -->
+  <g fill="currentColor">
+    <!-- Основной круг -->
+    <circle cx="12" cy="12" r="7"/>
+    
+    <!-- 8 зубьев равномерно по окружности -->
+    <rect x="11.3" y="3.5" width="1.4" height="2" rx="0.7"/>
+    <rect x="11.3" y="3.5" width="1.4" height="2" rx="0.7" transform="rotate(45 12 12)"/>
+    <rect x="11.3" y="3.5" width="1.4" height="2" rx="0.7" transform="rotate(90 12 12)"/>
+    <rect x="11.3" y="3.5" width="1.4" height="2" rx="0.7" transform="rotate(135 12 12)"/>
+    <rect x="11.3" y="3.5" width="1.4" height="2" rx="0.7" transform="rotate(180 12 12)"/>
+    <rect x="11.3" y="3.5" width="1.4" height="2" rx="0.7" transform="rotate(225 12 12)"/>
+    <rect x="11.3" y="3.5" width="1.4" height="2" rx="0.7" transform="rotate(270 12 12)"/>
+    <rect x="11.3" y="3.5" width="1.4" height="2" rx="0.7" transform="rotate(315 12 12)"/>
+  </g>
+  
+  <!-- Центральное отверстие -->
+  <circle cx="12" cy="12" r="2.5" fill="var(--bg-secondary, #ffffff)"/>
+</svg> 

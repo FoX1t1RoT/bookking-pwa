@@ -1,0 +1,12 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#007AFF"/>
+  
+  <!-- Simple open book icon -->
+  <path d="M16 10C16 10 12 11.5 8 11.5V23C12 23 16 21.5 16 21.5M16 10C16 10 20 11.5 24 11.5V23C20 23 16 21.5 16 21.5M16 10V21.5" 
+        stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Simple pages -->
+  <path d="M11 14V20M13 14V20M19 14V20M21 14V20" 
+        stroke="white" stroke-width="1" stroke-opacity="0.6" stroke-linecap="round"/>
+</svg> 

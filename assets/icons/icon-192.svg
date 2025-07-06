@@ -1,0 +1,15 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="192" height="192" rx="42" fill="#007AFF"/>
+  
+  <!-- Open book icon like 📚 emoji -->
+  <path d="M96 60C96 60 72 70 48 70V140C72 140 96 130 96 130M96 60C96 60 120 70 144 70V140C120 140 96 130 96 130M96 60V130" 
+        stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Book pages -->
+  <path d="M64 85V120M80 85V120M112 85V120M128 85V120" 
+        stroke="white" stroke-width="3" stroke-opacity="0.7" stroke-linecap="round"/>
+  
+  <!-- Book title decoration -->
+  <circle cx="96" cy="100" r="4" fill="white" fill-opacity="0.3"/>
+</svg> 

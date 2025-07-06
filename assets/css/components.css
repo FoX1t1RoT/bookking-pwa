@@ -1,0 +1,1724 @@
+/* Modal Components */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--modal-bg);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--modal-header-bg);
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-cancel,
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.modal-cancel:hover,
+.modal-close:hover {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+.modal-add {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.modal-add:disabled {
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.modal-add:not(:disabled):hover {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+/* Add Book Form - Full Screen */
+.add-book-form {
+    padding: 20px 16px;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #1c1c1e !important;
+    border-radius: 16px;
+}
+
+/* Book Info Section - Horizontal Layout */
+.book-info-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #2c2c2e !important;
+    border-radius: 16px;
+}
+
+.cover-container {
+    position: relative;
+    width: 70px;
+    height: 90px;
+    flex-shrink: 0;
+}
+
+.cover-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #48484a;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #D1D1D6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.cover-placeholder:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cover-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 8px 6px 6px;
+    transform: translateY(100%);
+    transition: transform 0.2s ease;
+}
+
+.cover-placeholder:hover .cover-overlay {
+    transform: translateY(0);
+}
+
+.cover-text {
+    font-size: 10px;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.cover-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cover-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.book-text-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Page Fields Section */
+.page-fields-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 17px;
+    color: var(--text-primary);
+    background-color: #48484a !important;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.form-input:focus {
+    border-color: var(--accent-color);
+    background-color: #5a5a5c !important;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* Header buttons for add book screen */
+.modal-cancel,
+.modal-add {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 17px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-weight: 400;
+}
+
+.modal-add {
+    font-weight: 600;
+}
+
+.modal-add:disabled {
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.modal-cancel:hover,
+.modal-add:not(:disabled):hover {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+/* iOS-style focus states */
+.form-input:focus {
+    transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+    .add-book-form {
+        padding: 16px 12px;
+    }
+    
+    .book-info-section {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .cover-placeholder {
+        width: 60px;
+        height: 75px;
+    }
+    
+    .form-input {
+        padding: 14px 16px;
+        font-size: 16px;
+    }
+}
+
+/* Archive Modal */
+.archive-content {
+    padding: 20px;
+    min-height: 200px;
+    background: #666666 !important;
+    border-radius: 16px;
+    margin: 16px;
+}
+
+/* Track Screen Components */
+.track-header {
+    display: flex;
+    justify-content: stretch;
+    margin-bottom: 24px;
+}
+
+.track-tabs {
+    display: flex;
+    background-color: var(--tab-inactive-bg);
+    border-radius: 12px;
+    padding: 4px;
+    width: 100%;
+}
+
+.track-tab {
+    flex: 1;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.track-tab.active {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+/* Goals Component */
+.goals-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.goal-item {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.goal-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.goal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.goal-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.goal-indicator {
+    width: 44px;
+    height: 44px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+/* Stats Component */
+.stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.stats-filters {
+    display: flex;
+    background-color: var(--tab-inactive-bg);
+    border-radius: 12px;
+    padding: 4px;
+    gap: 4px;
+    width: 100%;
+}
+
+.stats-filter {
+    flex: 1;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.stats-filter.active {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.stats-chart {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.chart-bars {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    height: 140px;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.chart-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.chart-bar {
+    width: 100%;
+    max-width: 20px;
+    background: var(--accent-color);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition: all 0.3s ease;
+    min-height: 4px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 2px;
+}
+
+.chart-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    line-height: 1;
+}
+
+.chart-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    min-height: 16px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.stats-summary {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.stats-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stats-metric-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.stats-metric-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Line chart for stats */
+.stats-line-chart {
+    width: 100%;
+    margin-bottom: 8px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    padding: 12px 8px 0 8px;
+    position: relative;
+}
+
+.chart-x-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    padding: 0 2px 4px 2px;
+}
+
+.stats-summary-multi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    justify-content: center;
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px 12px;
+    border: 1px solid var(--border-color);
+    margin-top: 8px;
+}
+
+.stats-summary-multi .stats-metric {
+    min-width: 120px;
+    margin-bottom: 8px;
+}
+
+/* Plan Component */
+.calendar-container {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: none;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.calendar-header {
+    padding: 16px;
+    border-bottom: none;
+    text-align: center;
+    background: #000;
+}
+
+.calendar-month {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    background-color: #000 !important;
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    padding: 8px;
+    justify-items: center;
+    align-items: center;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    color: var(--text-primary);
+    font-size: 14px;
+    cursor: pointer;
+    border: none !important;
+    box-shadow: none;
+}
+
+.calendar-day.selected {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.calendar-day.other-month {
+    color: var(--text-secondary);
+}
+
+.plan-stats {
+    margin-top: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.plan-date {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.plan-metrics {
+    display: flex;
+    gap: 20px;
+}
+
+.plan-metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-metric-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.plan-metric-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Settings Component */
+.settings-section {
+    margin-bottom: 32px;
+}
+
+.settings-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.settings-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-label {
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.settings-input {
+    width: 60px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-input);
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.settings-input:focus {
+    border-color: var(--accent-color);
+}
+
+.save-button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+.save-button:hover {
+    opacity: 0.8;
+}
+
+.backup-button {
+    width: 100%;
+    padding: 16px;
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 16px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.backup-button:hover {
+    background-color: var(--button-hover);
+}
+
+/* Back Button */
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.back-icon {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.back-text {
+    font-size: 16px;
+}
+
+/* Book Details Screen */
+.book-details-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 20px;
+}
+
+.book-info-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.book-cover-large {
+    width: 80px;
+    height: 100px;
+    background: #2C2C2E;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #D1D1D6;
+    flex-shrink: 0;
+}
+
+.book-cover-large svg {
+    color: #D1D1D6;
+}
+
+.book-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.book-title-large {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.book-author-large {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.book-pages {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.read-button {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-top: auto;
+}
+
+.read-button:hover {
+    opacity: 0.9;
+}
+
+.archive-button {
+    background: #FF9500;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-top: auto;
+}
+
+.archive-button:hover {
+    opacity: 0.9;
+}
+
+.unarchive-button {
+    background: #FF9500;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-top: auto;
+}
+
+.unarchive-button:hover {
+    opacity: 0.9;
+}
+
+/* Archive Toggle Button in Header */
+.archive-toggle-button {
+    background: none !important;
+    border: none !important;
+    color: #007AFF !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.archive-toggle-button svg {
+    color: #007AFF !important;
+    fill: none !important;
+}
+
+.archive-toggle-button.active {
+    background: var(--accent-color);
+    color: white;
+}
+
+.archive-toggle-button:hover {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+.reading-stats-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.stat-item:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+}
+
+.stat-label {
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.stat-value {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.sessions-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.sessions-card:hover {
+    background-color: var(--button-hover);
+}
+
+.sessions-label {
+    font-size: 16px;
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.sessions-arrow {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* Cancel Button */
+.cancel-button {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 8px;
+}
+
+/* Reading Screen */
+.reading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.reading-timer {
+    margin-bottom: 60px;
+}
+
+.timer-display {
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--text-primary);
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    letter-spacing: 2px;
+}
+
+.reading-book-info {
+    margin-bottom: 80px;
+}
+
+.reading-book-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.reading-book-author {
+    font-size: 18px;
+    color: var(--text-secondary);
+}
+
+.reading-page-info {
+    position: absolute;
+    bottom: 220px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reading-page-label {
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.reading-page-number {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.reading-controls {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px;
+}
+
+.reading-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.done-button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.pause-button {
+    background-color: #30d158;
+    color: white;
+}
+
+.resume-button {
+    background-color: #007AFF;
+    color: white;
+}
+
+.reading-button:hover {
+    opacity: 0.8;
+    transform: scale(0.95);
+}
+
+/* Save Button in Header */
+.save-button-header {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* New Session Screen */
+.new-session-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+}
+
+.session-times-card,
+.session-pages-card,
+.session-duration-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--border-color);
+}
+
+.session-time-item,
+.session-input-item,
+.session-duration-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.session-time-item:not(:last-child),
+.session-input-item:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+}
+
+.session-time-label,
+.session-input-label,
+.session-duration-label {
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.session-time-value,
+.session-input-value,
+.session-duration-value {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.session-input-field {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 16px;
+    color: var(--text-primary);
+    width: 80px;
+    text-align: right;
+    outline: none;
+}
+
+.session-input-field:focus {
+    border-color: var(--accent-color);
+    background-color: var(--bg-secondary);
+}
+
+/* Reading Sessions Screen */
+.sessions-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 0;
+}
+
+.sessions-book-info {
+    text-align: center;
+    padding: 16px 20px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    margin: 0 16px;
+}
+
+.sessions-book-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.sessions-book-author {
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.sessions-summary {
+    display: flex;
+    justify-content: space-around;
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    margin: 0 16px;
+}
+
+.sessions-stat {
+    text-align: center;
+}
+
+.sessions-stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.sessions-stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sessions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 16px;
+    margin-bottom: 100px;
+}
+
+.session-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.session-card:hover {
+    background: var(--bg-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.session-date {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.session-time {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.session-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.session-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.session-stat-item .session-stat-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.session-stat-item .session-stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.session-notes {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 4px;
+}
+
+/* Simple Reading Sessions Screen (like screenshot) */
+.sessions-screen-simple {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.sessions-list-simple {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 100px;
+}
+
+.session-card-simple {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.session-card-simple:hover {
+    background: var(--bg-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.session-datetime {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.session-pages {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.session-duration {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* Add Session Screen */
+.add-session-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 100px;
+}
+
+.session-time-input {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--text-primary);
+    width: 200px;
+    outline: none;
+    font-family: inherit;
+}
+
+.session-time-input:focus {
+    border-color: var(--accent-color);
+    background-color: var(--bg-secondary);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.session-time-input::-webkit-calendar-picker-indicator {
+    filter: var(--theme) == 'dark' ? invert(1) : invert(0);
+    cursor: pointer;
+}
+
+.session-time-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.session-input-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.session-input-item:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+    margin-bottom: 4px;
+}
+
+.session-input-field {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--text-primary);
+    width: 100px;
+    text-align: right;
+    outline: none;
+}
+
+.session-input-field:focus {
+    border-color: var(--accent-color);
+    background-color: var(--bg-secondary);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.session-duration-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.stats-metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.stats-metric-row:last-child {
+    border-bottom: none;
+}
+
+.stats-metric-label {
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: left;
+}
+
+.stats-metric-value {
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 700;
+    text-align: right;
+    min-width: 60px;
+    margin-left: 16px;
+}
+
+.stats-metrics-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+.stats-metrics-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 15px;
+    font-weight: 500;
+}
+.stats-metrics-table tr:last-child td {
+    border-bottom: none;
+}
+.stats-metrics-table .stats-metric-label {
+    color: var(--text-secondary);
+    text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+    min-width: 120px;
+}
+.stats-metrics-table .stats-metric-value {
+    color: var(--text-primary);
+    text-align: right;
+    font-size: 18px;
+    font-weight: 700;
+    min-width: 60px;
+    padding-left: 16px;
+}
+
+.stats-alltime-books {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.stats-alltime-pages-hour {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    margin-top: 2px;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #000;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-align: center;
+    padding: 4px 0;
+    border: none;
+    border-top: none !important;
+    border-bottom: none !important;
+}
+
+.calendar-weekdays > div {
+    background: #000;
+    border: none !important;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    background-color: #000 !important;
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    padding: 8px;
+    justify-items: center;
+    align-items: center;
+}
+
+.calendar-container, .calendar-header, .calendar-weekdays, .calendar-weekdays > div, .calendar-grid, .calendar-day {
+    background: #000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Убираем все возможные линии и границы */
+.calendar-header {
+    border-bottom: none !important;
+    background: #000 !important;
+}
+
+.calendar-weekdays {
+    border-bottom: none !important;
+    background: #000 !important;
+}
+
+.calendar-weekdays > div {
+    border: none !important;
+    background: #000 !important;
+}
+
+.calendar-grid {
+    border: none !important;
+    background: #000 !important;
+}
+
+.calendar-day {
+    border: none !important;
+    background: #000 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Убираем все возможные границы и тени */
+.calendar-container *,
+.calendar-header *,
+.calendar-weekdays *,
+.calendar-grid *,
+.calendar-day * {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Стили для кнопок навигации календаря */
+.calendar-nav-btn {
+    background: none !important;
+    border: none !important;
+    font-size: 20px;
+    color: #007AFF !important;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 36px !important;
+    height: 36px !important;
+}
+
+.calendar-nav-btn:hover {
+    background-color: rgba(0, 122, 255, 0.1) !important;
+}
+
+/* Стили для заголовка календаря */
+.calendar-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 16px !important;
+    background: #000 !important;
+    border-bottom: none !important;
+}
+
+.calendar-month {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    text-align: center !important;
+    flex: 1 !important;
+}
+
+/* Стили для дней недели */
+.calendar-weekday {
+    padding: 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary) !important;
+    background: #000 !important;
+}
+
+/* Стили для дней календаря */
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000 !important;
+    color: var(--text-primary) !important;
+    font-size: 14px;
+    cursor: pointer;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    position: relative;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    margin: 2px;
+}
+
+.calendar-day.today {
+    background-color: transparent !important;
+    color: #007AFF !important;
+    font-weight: 600;
+}
+
+.calendar-day.selected {
+    background-color: #007AFF !important;
+    color: white !important;
+    font-weight: 600;
+}
+
+.calendar-day.other-month {
+    color: var(--text-secondary) !important;
+}
+
+.calendar-day.has-reading {
+    position: relative;
+}
+
+.calendar-day.has-reading::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: #007AFF;
+    border-radius: 50%;
+}
+
+.calendar-day.selected.has-reading::after {
+    background-color: white;
+}
+
+/* Стили для заголовка Read под кнопкой архива */
+.read-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 16px 0;
+    text-align: left;
+}
+
+.plan-metrics-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+.plan-metrics-table td {
+    padding: 10px 0;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+}
+.plan-metric-label {
+    color: var(--text-secondary);
+    text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+    min-width: 120px;
+}
+.plan-metric-value {
+    color: var(--text-primary);
+    text-align: right;
+    font-size: 18px;
+    font-weight: 700;
+    min-width: 60px;
+    padding-left: 16px;
+}
+
+.add-button {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0 8px;
+}
+.plus-icon {
+    color: #007AFF !important;
+    font-size: 28px !important;
+    font-weight: 400 !important;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Убрать все разграничивающие линии */
+div, table, tr, td, th, thead, tbody, tfoot, section, header, footer, nav, ul, li {
+    border: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+}
+
+.app-header,
+.plan-stats,
+.book-card,
+.settings-card,
+.settings-item,
+.plan-metrics-table,
+.stats-metrics-table,
+.calendar-header,
+.calendar-weekdays,
+.calendar-grid,
+.calendar-day,
+.modal-content,
+.archive-content,
+.tab-navigation,
+.main-content {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Для таблиц и ячеек */
+table, tr, td, th {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.archive-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 10px 0 20px 0;
+    text-align: left;
+} 
