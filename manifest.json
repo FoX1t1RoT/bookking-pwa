@@ -3,7 +3,7 @@
   "short_name": "BookKing",
   "description": "Track your reading habits and progress",
   "version": "4.0.0",
-  "start_url": "/",
+  "start_url": "/bookking-pwa/",
   "display": "standalone",
   "theme_color": "#0a84ff",
   "background_color": "#000000",
