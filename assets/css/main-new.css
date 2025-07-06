@@ -36,6 +36,11 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.3s ease, color 0.3s ease;
+    /* iPhone safe area support */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
 }
 
 .app-container {
@@ -46,6 +51,9 @@ body {
     margin: 0 auto;
     background-color: var(--bg-secondary);
     position: relative;
+    /* iPhone safe area support */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Header Styles */
@@ -59,6 +67,8 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+    /* iPhone safe area padding */
+    padding-top: max(12px, env(safe-area-inset-top));
 }
 
 .header-left {
