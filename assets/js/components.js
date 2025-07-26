@@ -73,6 +73,7 @@ class BookKingComponents {
             currentBookId: this.currentBookId,
             currentTab: this.currentTab,
             showingArchive: this.showingArchive,
+            hasSessionData: !!this.sessionData, // Track if we have session data for new session
             timestamp: Date.now()
         };
         
@@ -210,6 +211,15 @@ class BookKingComponents {
             case 'read':
                 if (this.currentView === 'addBook') {
                     this.renderAddBookScreen();
+                } else if (this.currentView === 'newSession') {
+                    console.log('Loading new session screen from loadCurrentScreen');
+                    if (this.sessionData) {
+                        this.renderNewSessionScreen();
+                    } else {
+                        console.log('No session data found, redirecting to read screen');
+                        this.currentView = 'main';
+                        this.loadReadScreen();
+                    }
                 } else {
                     this.loadReadScreen();
                 }
@@ -895,8 +905,14 @@ class BookKingComponents {
             duration: this.readingElapsed + ' seconds'
         });
         
+        // Clear screen state to prevent restoration conflicts
+        this.clearScreenState();
+        
         this.currentView = 'newSession';
+        this.saveScreenState(); // Save new session screen state
         this.renderNewSessionScreen();
+        
+        console.log('Switched to new session screen');
     }
 
     renderNewSessionScreen() {

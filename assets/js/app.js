@@ -422,7 +422,7 @@ class BookKingApp {
             // Screen state was restored - load the appropriate screen
             console.log('Restoring screen state after background return');
             
-            // If we were on reading screen with active timer, restore it
+            // Handle different view types
             if (this.components.currentView === 'reading' && 
                 localStorage.getItem('bookking_timer_active') === 'true') {
                 
@@ -439,6 +439,11 @@ class BookKingApp {
                     }
                     return;
                 }
+            } else if (this.components.currentView === 'newSession') {
+                console.log('Restoring new session screen');
+                // Don't restore new session screen - let it stay as is
+                // The screen should already be rendered and shouldn't be overridden
+                return;
             }
             
             // For other screen states, load the appropriate screen
