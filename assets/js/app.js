@@ -115,6 +115,7 @@ class BookKingApp {
         window.testTimer = () => {
             console.log('⏰ Timer Test Functions:');
             console.log('- testTimer.check() - Check timer state');
+            console.log('- testTimer.button() - Check button state');
             console.log('- testTimer.simulate() - Simulate background/foreground');
             console.log('- testTimer.pause() - Test pause functionality');
             console.log('- testTimer.resume() - Test resume functionality');
@@ -143,6 +144,20 @@ class BookKingApp {
                     
                     if (savedElapsed) {
                         console.log('Timer is paused at:', savedElapsed + ' seconds');
+                    }
+                },
+                
+                button: () => {
+                    const pauseButton = document.getElementById('pauseReading');
+                    if (pauseButton) {
+                        console.log('Pause button state:', {
+                            text: pauseButton.textContent,
+                            classes: pauseButton.className,
+                            hasOnclick: !!pauseButton.onclick,
+                            disabled: pauseButton.disabled
+                        });
+                    } else {
+                        console.log('Pause button not found - not on reading screen');
                     }
                 },
                 

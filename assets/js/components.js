@@ -843,10 +843,11 @@ class BookKingComponents {
             doneButton.addEventListener('click', () => this.finishReading());
         }
 
-        // Pause button
+        // Pause button - will be managed dynamically by pause/resume methods
         const pauseButton = document.getElementById('pauseReading');
         if (pauseButton) {
-            pauseButton.addEventListener('click', () => this.pauseReading());
+            // Remove any existing listeners and set initial state
+            pauseButton.onclick = () => this.pauseReading();
         }
     }
 
@@ -1045,6 +1046,8 @@ class BookKingComponents {
     }
 
     pauseReading() {
+        console.log('pauseReading() called - timer running:', !!this.readingTimer);
+        
         if (this.readingTimer) {
             // Pause timer but keep state for resuming
             this.pauseReadingTimer();
@@ -1053,8 +1056,15 @@ class BookKingComponents {
                 pauseButton.textContent = 'Resume';
                 pauseButton.classList.remove('pause-button');
                 pauseButton.classList.add('resume-button');
+                
+                // Clear any existing onclick handler before setting new one
+                pauseButton.onclick = null;
                 pauseButton.onclick = () => this.resumeReading();
+                
+                console.log('Button changed to Resume');
             }
+        } else {
+            console.log('No timer to pause');
         }
     }
     
@@ -1109,7 +1119,12 @@ class BookKingComponents {
             pauseButton.textContent = 'Pause';
             pauseButton.classList.remove('resume-button');
             pauseButton.classList.add('pause-button');
+            
+            // Clear any existing onclick handler before setting new one
+            pauseButton.onclick = null;
             pauseButton.onclick = () => this.pauseReading();
+            
+            console.log('Button changed back to Pause');
         }
         
         console.log('Timer resumed successfully');
