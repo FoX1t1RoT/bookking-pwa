@@ -15,6 +15,7 @@ class BookKingComponents {
         this.readingTimer = null;
         this.readingElapsed = 0;
         this.sessionData = null;
+        this.timerVisibilityHandler = null; // For background/foreground timer handling
         this.showingArchive = false; // Track whether we're showing archive or active books
         this.currentBookCover = null; // Store selected book cover
         this.init();
@@ -22,7 +23,26 @@ class BookKingComponents {
 
     init() {
         this.bindEvents();
+        this.restoreTimerIfActive();
         this.loadCurrentScreen();
+    }
+    
+    restoreTimerIfActive() {
+        // Check if timer was active when app was closed
+        const timerActive = localStorage.getItem('bookking_timer_active');
+        const timerStartTime = localStorage.getItem('bookking_timer_start');
+        
+        if (timerActive === 'true' && timerStartTime) {
+            // Restore timer state
+            this.readingStartTime = new Date(parseInt(timerStartTime));
+            this.updateTimerFromStartTime();
+            
+            // Don't start the interval yet - wait for user to navigate to reading screen
+            // But bind the visibility handler for when they do
+            this.bindTimerVisibilityHandler();
+            
+            console.log('Timer state restored from localStorage - elapsed:', this.readingElapsed, 'seconds');
+        }
     }
 
     bindEvents() {
@@ -629,7 +649,17 @@ class BookKingComponents {
 
         this.currentView = 'reading';
         this.renderReadingScreen(book);
-        this.startReadingTimer();
+        
+        // Check if we're restoring an active timer
+        const timerActive = localStorage.getItem('bookking_timer_active');
+        if (timerActive === 'true' && this.readingStartTime) {
+            // Resume existing timer with live updates
+            this.startTimerInterval();
+            console.log('Resumed active timer with', this.readingElapsed, 'seconds elapsed');
+        } else {
+            // Start new timer
+            this.startReadingTimer();
+        }
     }
 
     renderReadingScreen(book) {
@@ -668,10 +698,58 @@ class BookKingComponents {
         this.readingStartTime = new Date();
         this.readingElapsed = 0;
         
+        // Save timer state to localStorage for persistence
+        localStorage.setItem('bookking_timer_start', this.readingStartTime.getTime());
+        localStorage.setItem('bookking_timer_active', 'true');
+        
+        this.startTimerInterval();
+        
+        // Add visibility change handler for this timer session
+        this.bindTimerVisibilityHandler();
+    }
+    
+    startTimerInterval() {
+        if (this.readingTimer) {
+            clearInterval(this.readingTimer);
+        }
+        
         this.readingTimer = setInterval(() => {
-            this.readingElapsed = Math.floor((new Date() - this.readingStartTime) / 1000);
-            this.updateTimerDisplay();
+            this.updateTimerFromStartTime();
         }, 1000);
+        
+        // Update immediately
+        this.updateTimerFromStartTime();
+    }
+    
+    updateTimerFromStartTime() {
+        if (!this.readingStartTime) return;
+        
+        // Always calculate from start time - works even after background
+        this.readingElapsed = Math.floor((new Date() - this.readingStartTime) / 1000);
+        this.updateTimerDisplay();
+    }
+    
+    bindTimerVisibilityHandler() {
+        // Remove existing handler if any
+        if (this.timerVisibilityHandler) {
+            document.removeEventListener('visibilitychange', this.timerVisibilityHandler);
+        }
+        
+        this.timerVisibilityHandler = () => {
+            if (!document.hidden && this.readingStartTime) {
+                // App became visible - recalculate time and resume updates
+                this.updateTimerFromStartTime();
+                
+                // Restart interval if timer is active
+                if (localStorage.getItem('bookking_timer_active') === 'true') {
+                    this.startTimerInterval();
+                }
+                
+                console.log('Timer resumed from background - elapsed:', this.readingElapsed, 'seconds');
+            }
+        };
+        
+        document.addEventListener('visibilitychange', this.timerVisibilityHandler);
     }
 
     updateTimerDisplay() {
@@ -909,7 +987,8 @@ class BookKingComponents {
 
     pauseReading() {
         if (this.readingTimer) {
-            this.stopReadingTimer();
+            // Pause timer but keep state for resuming
+            this.pauseReadingTimer();
             const pauseButton = document.getElementById('pauseReading');
             if (pauseButton) {
                 pauseButton.textContent = 'Resume';
@@ -919,13 +998,36 @@ class BookKingComponents {
             }
         }
     }
+    
+    pauseReadingTimer() {
+        // Stop the interval but keep timer state
+        if (this.readingTimer) {
+            clearInterval(this.readingTimer);
+            this.readingTimer = null;
+        }
+        
+        // Update elapsed time one last time
+        if (this.readingStartTime) {
+            this.readingElapsed = Math.floor((new Date() - this.readingStartTime) / 1000);
+        }
+        
+        // Keep timer state in localStorage (don't clear it like stopReadingTimer does)
+        console.log('Timer paused at', this.readingElapsed, 'seconds');
+    }
 
     resumeReading() {
+        // Restore start time based on elapsed time
         this.readingStartTime = new Date() - (this.readingElapsed * 1000);
-        this.readingTimer = setInterval(() => {
-            this.readingElapsed = Math.floor((new Date() - this.readingStartTime) / 1000);
-            this.updateTimerDisplay();
-        }, 1000);
+        
+        // Update localStorage with new start time
+        localStorage.setItem('bookking_timer_start', this.readingStartTime.getTime());
+        localStorage.setItem('bookking_timer_active', 'true');
+        
+        // Use our improved timer interval method
+        this.startTimerInterval();
+        
+        // Ensure visibility handler is bound
+        this.bindTimerVisibilityHandler();
         
         const pauseButton = document.getElementById('pauseReading');
         if (pauseButton) {
@@ -941,6 +1043,18 @@ class BookKingComponents {
             clearInterval(this.readingTimer);
             this.readingTimer = null;
         }
+        
+        // Clear timer state from localStorage
+        localStorage.removeItem('bookking_timer_start');
+        localStorage.removeItem('bookking_timer_active');
+        
+        // Remove visibility change handler
+        if (this.timerVisibilityHandler) {
+            document.removeEventListener('visibilitychange', this.timerVisibilityHandler);
+            this.timerVisibilityHandler = null;
+        }
+        
+        console.log('Timer stopped and state cleared');
     }
 
     showReadingSessions() {

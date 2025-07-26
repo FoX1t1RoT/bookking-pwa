@@ -112,6 +112,56 @@ class BookKingApp {
             return this.components.fixFinishedBooksWithoutDate();
         };
         
+        window.testTimer = () => {
+            console.log('⏰ Timer Test Functions:');
+            console.log('- testTimer.check() - Check timer state');
+            console.log('- testTimer.simulate() - Simulate background/foreground');
+            console.log('- testTimer.clear() - Clear timer state');
+            
+            return {
+                check: () => {
+                    const active = localStorage.getItem('bookking_timer_active');
+                    const start = localStorage.getItem('bookking_timer_start');
+                    const elapsed = this.components.readingElapsed;
+                    const running = !!this.components.readingTimer;
+                    
+                    console.log('Timer state:', {
+                        active: active === 'true',
+                        startTime: start ? new Date(parseInt(start)) : null,
+                        elapsed: elapsed + ' seconds',
+                        intervalRunning: running
+                    });
+                    
+                    if (active === 'true' && start) {
+                        const realElapsed = Math.floor((Date.now() - parseInt(start)) / 1000);
+                        console.log('Real elapsed time:', realElapsed + ' seconds');
+                    }
+                },
+                
+                simulate: () => {
+                    console.log('Simulating app going to background...');
+                    Object.defineProperty(document, 'hidden', { value: true, writable: true });
+                    document.dispatchEvent(new Event('visibilitychange'));
+                    
+                    setTimeout(() => {
+                        console.log('Simulating app returning to foreground...');
+                        Object.defineProperty(document, 'hidden', { value: false, writable: true });
+                        document.dispatchEvent(new Event('visibilitychange'));
+                    }, 2000);
+                },
+                
+                clear: () => {
+                    localStorage.removeItem('bookking_timer_active');
+                    localStorage.removeItem('bookking_timer_start');
+                    if (this.components.readingTimer) {
+                        clearInterval(this.components.readingTimer);
+                        this.components.readingTimer = null;
+                    }
+                    console.log('Timer state cleared');
+                }
+            };
+        };
+        
         console.log('Debug functions available:');
         console.log('- switchToRead() - Switch to Read tab');
         console.log('- switchToTrack() - Switch to Track tab');
@@ -128,6 +178,7 @@ class BookKingApp {
         console.log('- showSessions(bookId) - Show reading sessions for a book');
         console.log('- addSessionForm(bookId) - Open manual add session form');
         console.log('- fixFinishedBooks() - Fix finished books without dateFinished');
+        console.log('- testTimer() - Timer testing functions (check, simulate, clear)');
         console.log('- window.bookKingComponents - Access to components');
         console.log('- toggleTheme() - Toggle dark/light theme');
             
