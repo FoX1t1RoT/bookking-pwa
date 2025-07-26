@@ -203,12 +203,14 @@ class BookKingApp {
                     localStorage.removeItem('bookking_timer_start');
                     localStorage.removeItem('bookking_timer_elapsed');
                     localStorage.removeItem('bookking_session_start');
+                    localStorage.removeItem('bookking_session_data');
                     localStorage.removeItem('bookking_screen_state');
                     if (this.components.readingTimer) {
                         clearInterval(this.components.readingTimer);
                         this.components.readingTimer = null;
                     }
                     this.components.originalSessionStartTime = null;
+                    this.components.sessionData = null;
                     console.log('Timer and screen state cleared');
                 }
             };

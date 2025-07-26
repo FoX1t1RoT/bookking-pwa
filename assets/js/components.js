@@ -34,6 +34,21 @@ class BookKingComponents {
         const timerStartTime = localStorage.getItem('bookking_timer_start');
         const originalSessionStart = localStorage.getItem('bookking_session_start');
         const savedElapsed = localStorage.getItem('bookking_timer_elapsed');
+        const savedSessionData = localStorage.getItem('bookking_session_data');
+        
+        // Restore session data if available
+        if (savedSessionData) {
+            try {
+                this.sessionData = JSON.parse(savedSessionData);
+                // Convert string dates back to Date objects
+                this.sessionData.startTime = new Date(this.sessionData.startTime);
+                this.sessionData.finishTime = new Date(this.sessionData.finishTime);
+                console.log('Restored session data from localStorage:', this.sessionData);
+            } catch (error) {
+                console.error('Failed to restore session data:', error);
+                this.sessionData = null;
+            }
+        }
         
         if (timerActive === 'true' && timerStartTime) {
             // Restore timer state
@@ -100,6 +115,24 @@ class BookKingComponents {
             this.currentBookId = screenState.currentBookId;
             this.currentTab = screenState.currentTab;
             this.showingArchive = screenState.showingArchive;
+            
+            // Special handling for newSession view
+            if (this.currentView === 'newSession') {
+                console.log('Restoring newSession view, checking session data...');
+                if (!this.sessionData) {
+                    const savedSessionData = localStorage.getItem('bookking_session_data');
+                    if (savedSessionData) {
+                        try {
+                            this.sessionData = JSON.parse(savedSessionData);
+                            this.sessionData.startTime = new Date(this.sessionData.startTime);
+                            this.sessionData.finishTime = new Date(this.sessionData.finishTime);
+                            console.log('Session data restored during screen state restore:', this.sessionData);
+                        } catch (error) {
+                            console.error('Failed to restore session data during screen restore:', error);
+                        }
+                    }
+                }
+            }
             
             console.log('Screen state restored:', screenState);
             return true;
@@ -899,6 +932,9 @@ class BookKingComponents {
             duration: this.readingElapsed
         };
         
+        // Save session data to localStorage to survive background/foreground
+        localStorage.setItem('bookking_session_data', JSON.stringify(this.sessionData));
+        
         console.log('Session prepared for saving:', {
             originalStart: sessionStartTime,
             finish: finishTime,
@@ -916,13 +952,43 @@ class BookKingComponents {
     }
 
     renderNewSessionScreen() {
+        console.log('renderNewSessionScreen called');
+        console.log('sessionData:', this.sessionData);
+        console.log('currentBookId:', this.currentBookId);
+        
         this.updateHeader('New Session', false, false, false, true); // Show back and save
         
         const container = document.querySelector('.main-content');
-        if (!container) return;
+        if (!container) {
+            console.error('Main content container not found');
+            return;
+        }
 
         const book = this.storage.getBooks().find(b => b.id === this.currentBookId);
-        if (!book) return;
+        if (!book) {
+            console.error('Book not found for ID:', this.currentBookId);
+            return;
+        }
+        
+        if (!this.sessionData) {
+            console.error('No session data available');
+            // Try to restore from localStorage
+            const savedSessionData = localStorage.getItem('bookking_session_data');
+            if (savedSessionData) {
+                try {
+                    this.sessionData = JSON.parse(savedSessionData);
+                    this.sessionData.startTime = new Date(this.sessionData.startTime);
+                    this.sessionData.finishTime = new Date(this.sessionData.finishTime);
+                    console.log('Restored session data in renderNewSessionScreen:', this.sessionData);
+                } catch (error) {
+                    console.error('Failed to restore session data in render:', error);
+                    return;
+                }
+            } else {
+                console.error('No session data in localStorage either');
+                return;
+            }
+        }
 
         // Format dates
         const startTime = this.formatSessionTime(this.sessionData.startTime);
@@ -966,7 +1032,12 @@ class BookKingComponents {
             </div>
         `;
 
+        console.log('New session screen HTML rendered');
+        console.log('Container innerHTML length:', container.innerHTML.length);
+        
         this.bindNewSessionEvents();
+        
+        console.log('New session events bound');
     }
 
     formatSessionTime(date) {
@@ -1186,6 +1257,7 @@ class BookKingComponents {
         localStorage.removeItem('bookking_timer_active');
         localStorage.removeItem('bookking_timer_elapsed');
         localStorage.removeItem('bookking_session_start');
+        localStorage.removeItem('bookking_session_data');
         
         // Clear screen state since reading session is ending
         this.clearScreenState();
