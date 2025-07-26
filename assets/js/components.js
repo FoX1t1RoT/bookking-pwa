@@ -44,6 +44,53 @@ class BookKingComponents {
             console.log('Timer state restored from localStorage - elapsed:', this.readingElapsed, 'seconds');
         }
     }
+    
+    saveScreenState() {
+        // Save current screen state for recovery after background/foreground
+        const screenState = {
+            currentView: this.currentView,
+            currentBookId: this.currentBookId,
+            currentTab: this.currentTab,
+            showingArchive: this.showingArchive,
+            timestamp: Date.now()
+        };
+        
+        localStorage.setItem('bookking_screen_state', JSON.stringify(screenState));
+        console.log('Screen state saved:', screenState);
+    }
+    
+    restoreScreenState() {
+        const savedState = localStorage.getItem('bookking_screen_state');
+        if (!savedState) return false;
+        
+        try {
+            const screenState = JSON.parse(savedState);
+            
+            // Only restore if state is recent (within last 5 minutes)
+            const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+            if (screenState.timestamp < fiveMinutesAgo) {
+                localStorage.removeItem('bookking_screen_state');
+                return false;
+            }
+            
+            // Restore state
+            this.currentView = screenState.currentView;
+            this.currentBookId = screenState.currentBookId;
+            this.currentTab = screenState.currentTab;
+            this.showingArchive = screenState.showingArchive;
+            
+            console.log('Screen state restored:', screenState);
+            return true;
+        } catch (error) {
+            console.error('Failed to restore screen state:', error);
+            localStorage.removeItem('bookking_screen_state');
+            return false;
+        }
+    }
+    
+    clearScreenState() {
+        localStorage.removeItem('bookking_screen_state');
+    }
 
     bindEvents() {
         // Tab navigation
@@ -665,6 +712,9 @@ class BookKingComponents {
     renderReadingScreen(book) {
         this.updateHeader('', false, false, true); // Show cancel button
         
+        // Save current screen state for background/foreground recovery
+        this.saveScreenState();
+        
         const container = document.querySelector('.main-content');
         if (!container) return;
 
@@ -1047,6 +1097,9 @@ class BookKingComponents {
         // Clear timer state from localStorage
         localStorage.removeItem('bookking_timer_start');
         localStorage.removeItem('bookking_timer_active');
+        
+        // Clear screen state since reading session is ending
+        this.clearScreenState();
         
         // Remove visibility change handler
         if (this.timerVisibilityHandler) {

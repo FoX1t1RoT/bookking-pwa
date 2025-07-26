@@ -153,11 +153,55 @@ class BookKingApp {
                 clear: () => {
                     localStorage.removeItem('bookking_timer_active');
                     localStorage.removeItem('bookking_timer_start');
+                    localStorage.removeItem('bookking_screen_state');
                     if (this.components.readingTimer) {
                         clearInterval(this.components.readingTimer);
                         this.components.readingTimer = null;
                     }
-                    console.log('Timer state cleared');
+                    console.log('Timer and screen state cleared');
+                }
+            };
+        };
+        
+        window.testScreen = () => {
+            console.log('📱 Screen State Test Functions:');
+            console.log('- testScreen.check() - Check current screen state');
+            console.log('- testScreen.save() - Save current screen state'); 
+            console.log('- testScreen.restore() - Restore screen state');
+            console.log('- testScreen.clear() - Clear screen state');
+            
+            return {
+                check: () => {
+                    const screenState = localStorage.getItem('bookking_screen_state');
+                    const timerActive = localStorage.getItem('bookking_timer_active');
+                    
+                    console.log('Current components state:', {
+                        currentView: this.components.currentView,
+                        currentBookId: this.components.currentBookId,
+                        currentTab: this.components.currentTab,
+                        showingArchive: this.components.showingArchive
+                    });
+                    
+                    console.log('Saved screen state:', screenState ? JSON.parse(screenState) : null);
+                    console.log('Timer active:', timerActive === 'true');
+                },
+                
+                save: () => {
+                    this.components.saveScreenState();
+                    console.log('Screen state saved manually');
+                },
+                
+                restore: () => {
+                    const restored = this.components.restoreScreenState();
+                    console.log('Screen state restore result:', restored);
+                    if (restored) {
+                        this.components.loadCurrentScreen();
+                    }
+                },
+                
+                clear: () => {
+                    this.components.clearScreenState();
+                    console.log('Screen state cleared');
                 }
             };
         };
@@ -179,6 +223,7 @@ class BookKingApp {
         console.log('- addSessionForm(bookId) - Open manual add session form');
         console.log('- fixFinishedBooks() - Fix finished books without dateFinished');
         console.log('- testTimer() - Timer testing functions (check, simulate, clear)');
+        console.log('- testScreen() - Screen state testing functions (check, save, restore, clear)');
         console.log('- window.bookKingComponents - Access to components');
         console.log('- toggleTheme() - Toggle dark/light theme');
             
@@ -321,9 +366,37 @@ class BookKingApp {
     }
 
     handleAppVisible() {
-        // Refresh data when app becomes visible
-        if (this.components && this.components.currentTab) {
+        // Try to restore screen state first
+        if (this.components && this.components.restoreScreenState()) {
+            // Screen state was restored - load the appropriate screen
+            console.log('Restoring screen state after background return');
+            
+            // If we were on reading screen with active timer, restore it
+            if (this.components.currentView === 'reading' && 
+                localStorage.getItem('bookking_timer_active') === 'true') {
+                
+                const book = this.components.storage.getBooks().find(b => b.id === this.components.currentBookId);
+                if (book) {
+                    // Switch to read tab and render reading screen
+                    this.components.switchTab('read');
+                    this.components.renderReadingScreen(book);
+                    
+                    // Resume timer updates if timer was active
+                    if (this.components.readingStartTime) {
+                        this.components.startTimerInterval();
+                        console.log('Resumed reading screen with active timer');
+                    }
+                    return;
+                }
+            }
+            
+            // For other screen states, load the appropriate screen
             this.components.loadCurrentScreen();
+        } else {
+            // No saved state - just refresh current screen
+            if (this.components && this.components.currentTab) {
+                this.components.loadCurrentScreen();
+            }
         }
     }
 
