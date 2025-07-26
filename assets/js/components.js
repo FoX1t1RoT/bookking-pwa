@@ -101,22 +101,45 @@ class BookKingComponents {
                 return false;
             }
             
+            console.log('Restoring screen state:', screenState);
+            
             // Restore state
             this.currentView = screenState.currentView;
             this.currentBookId = screenState.currentBookId;
             this.currentTab = screenState.currentTab;
             this.showingArchive = screenState.showingArchive;
             
-            // If currentBookId is null but we're in newSession, try to restore from other sources
-            if (this.currentView === 'newSession' && !this.currentBookId) {
-                const savedBookId = localStorage.getItem('bookking_session_book_id');
-                if (savedBookId) {
-                    this.currentBookId = savedBookId;
-                    console.log('Restored currentBookId from session storage:', savedBookId);
+            console.log('After basic restore - currentBookId:', this.currentBookId);
+            
+            // AGGRESSIVE: Always try to restore bookId for newSession from all sources
+            if (this.currentView === 'newSession') {
+                console.log('NewSession detected, checking bookId sources...');
+                
+                if (!this.currentBookId) {
+                    console.log('currentBookId is null, trying fallbacks...');
+                    
+                    // Try saved session book ID
+                    const savedBookId = localStorage.getItem('bookking_session_book_id');
+                    if (savedBookId) {
+                        this.currentBookId = savedBookId;
+                        console.log('Restored currentBookId from session storage:', savedBookId);
+                    } else {
+                        // Emergency fallback: get from recent sessions
+                        console.log('No saved bookId, trying recent sessions...');
+                        const recentSessions = this.storage.getSessions();
+                        if (recentSessions.length > 0) {
+                            this.currentBookId = recentSessions[0].bookId;
+                            console.log('EMERGENCY: Restored bookId from recent sessions:', this.currentBookId);
+                        } else {
+                            console.error('CRITICAL: No bookId found anywhere!');
+                        }
+                    }
+                } else {
+                    console.log('currentBookId already exists:', this.currentBookId);
                 }
             }
             
-            console.log('Screen state restored:', screenState);
+            console.log('Screen state restored with final bookId:', this.currentBookId);
             return true;
         } catch (error) {
             console.error('Failed to restore screen state:', error);
@@ -229,6 +252,21 @@ class BookKingComponents {
                     this.renderAddBookScreen();
                 } else if (this.currentView === 'newSession') {
                     console.log('Loading new session screen from loadCurrentScreen');
+                    console.log('Current state:', {
+                        currentBookId: this.currentBookId,
+                        hasSessionData: !!this.sessionData
+                    });
+                    
+                    // CRITICAL: Restore bookId first before anything else
+                    if (!this.currentBookId) {
+                        const savedBookId = localStorage.getItem('bookking_session_book_id');
+                        if (savedBookId) {
+                            this.currentBookId = savedBookId;
+                            console.log('LOADSCREEN: Restored currentBookId:', savedBookId);
+                        } else {
+                            console.error('LOADSCREEN: No savedBookId found!');
+                        }
+                    }
                     
                     // Restore session data from localStorage if needed
                     if (!this.sessionData) {
@@ -246,6 +284,11 @@ class BookKingComponents {
                             }
                         }
                     }
+                    
+                    console.log('Final state before render:', {
+                        currentBookId: this.currentBookId,
+                        hasSessionData: !!this.sessionData
+                    });
                     
                     if (this.sessionData) {
                         this.renderNewSessionScreen();
@@ -942,10 +985,26 @@ class BookKingComponents {
         // Save session data to localStorage to survive background/foreground transitions
         localStorage.setItem('bookking_pending_session', JSON.stringify(this.sessionData));
         
+        // CRITICAL: Save currentBookId immediately to prevent loss
+        if (this.currentBookId) {
+            localStorage.setItem('bookking_session_book_id', this.currentBookId);
+            console.log('CRITICAL: Saved currentBookId for new session:', this.currentBookId);
+        } else {
+            console.error('CRITICAL: currentBookId is null when finishing reading!');
+            // Try to find a book ID from recent reading
+            const recentSessions = this.storage.getSessions();
+            if (recentSessions.length > 0) {
+                this.currentBookId = recentSessions[0].bookId;
+                localStorage.setItem('bookking_session_book_id', this.currentBookId);
+                console.log('EMERGENCY: Recovered bookId from recent sessions:', this.currentBookId);
+            }
+        }
+        
         console.log('Session prepared for saving:', {
             originalStart: sessionStartTime,
             finish: finishTime,
-            duration: this.readingElapsed + ' seconds'
+            duration: this.readingElapsed + ' seconds',
+            bookId: this.currentBookId
         });
         
         // Clear screen state to prevent restoration conflicts
@@ -979,6 +1038,16 @@ class BookKingComponents {
 
     renderNewSessionScreen() {
         console.log('renderNewSessionScreen called with sessionData:', !!this.sessionData);
+        console.log('renderNewSessionScreen called with currentBookId:', this.currentBookId);
+        
+        // IMMEDIATE bookId recovery before any checks
+        if (!this.currentBookId) {
+            const savedBookId = localStorage.getItem('bookking_session_book_id');
+            if (savedBookId) {
+                this.currentBookId = savedBookId;
+                console.log('IMMEDIATE: Restored currentBookId from localStorage:', savedBookId);
+            }
+        }
         
         if (!this.sessionData) {
             console.error('Cannot render new session screen: no session data');
