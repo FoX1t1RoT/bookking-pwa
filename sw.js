@@ -1,33 +1,33 @@
 // BookKing Service Worker - iOS Optimized AGGRESSIVE OFFLINE MODE
 // Version: aggressive-offline-v1.0.8
 
-const CACHE_NAME = 'bookking-aggressive-offline-v1.0.9';
-const OFFLINE_URL = './offline.html';
+const CACHE_NAME = 'bookking-aggressive-offline-v1.0.8';
+const OFFLINE_URL = '/bookking-pwa/offline.html';
 
 // AGGRESSIVE OFFLINE MODE - Block all network requests
 let AGGRESSIVE_OFFLINE_MODE = true;
 
-// Cache all essential files with version parameters  
+// Cache all essential files with version parameters
 const CACHE_FILES = [
-    './',
-    './index.html',
-    './manifest.json?v=4.9.5&t=1734750000',
-    './offline.html',
-    './favicon.ico',
-    './assets/css/main-new.css?v=1.0.25&t=1734750000',
-    './assets/css/components.css?v=4.9.27&t=1734750000',
-    './assets/js/storage.js?v=4.6.3&t=1734725000',
-    './assets/js/components.js?v=4.9.15&t=1734750000',
-    './assets/js/plan-component.js?v=4.4.3&t=1734725000',
-    './assets/js/settings-component.js?v=4.4.2&t=1734725000',
-    './assets/js/app.js?v=4.4.11&t=1734747000',
-    './assets/icons/favicon.svg',
-    './assets/icons/icon-192.svg',
-    './assets/icons/icon-512.svg',
-    './assets/icons/tab-plan.svg',
-    './assets/icons/tab-read.svg',
-    './assets/icons/tab-settings.svg',
-    './assets/icons/tab-track.svg'
+    '/bookking-pwa/',
+    '/bookking-pwa/index.html',
+    '/bookking-pwa/manifest.json?v=4.9.5&t=1734750000',
+    '/bookking-pwa/offline.html',
+    '/bookking-pwa/favicon.ico',
+    '/bookking-pwa/assets/css/main-new.css?v=1.0.25&t=1734750000',
+    '/bookking-pwa/assets/css/components.css?v=4.9.27&t=1734750000',
+    '/bookking-pwa/assets/js/storage.js?v=4.6.3&t=1734725000',
+    '/bookking-pwa/assets/js/components.js?v=4.9.15&t=1734750000',
+    '/bookking-pwa/assets/js/plan-component.js?v=4.4.3&t=1734725000',
+    '/bookking-pwa/assets/js/settings-component.js?v=4.4.2&t=1734725000',
+    '/bookking-pwa/assets/js/app.js?v=4.4.11&t=1734747000',
+    '/bookking-pwa/assets/icons/favicon.svg',
+    '/bookking-pwa/assets/icons/icon-192.svg',
+    '/bookking-pwa/assets/icons/icon-512.svg',
+    '/bookking-pwa/assets/icons/tab-plan.svg',
+    '/bookking-pwa/assets/icons/tab-read.svg',
+    '/bookking-pwa/assets/icons/tab-settings.svg',
+    '/bookking-pwa/assets/icons/tab-track.svg'
 ];
 
 console.log('BookKing SW: iOS AGGRESSIVE OFFLINE MODE - Installing...');
@@ -119,7 +119,7 @@ self.addEventListener('fetch', (event) => {
                         // For navigation requests, serve index.html
                         if (event.request.mode === 'navigate') {
                             console.log('BookKing SW: iOS AGGRESSIVE OFFLINE - Navigation request, serving index.html');
-                            return caches.match('./index.html');
+                            return caches.match('/bookking-pwa/index.html');
                         }
                         // For other requests, serve offline page
                         console.log('BookKing SW: iOS AGGRESSIVE OFFLINE - Not in cache, serving offline page:', url.pathname);

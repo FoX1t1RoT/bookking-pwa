@@ -9,20 +9,11 @@ class BookKingApp {
 
     async init() {
         try {
-            console.log('BookKing App initialization started');
-            console.log('Standalone mode:', window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches);
-            
             // Initialize storage
             this.storage = window.bookKingStorage;
-            if (!this.storage) {
-                throw new Error('Storage not available');
-            }
             
             // Initialize components
             this.components = new BookKingComponents(this.storage);
-            if (!this.components) {
-                throw new Error('Components not initialized');
-            }
             
             // Initialize dark theme
             this.initializeTheme();
@@ -212,7 +203,7 @@ class BookKingApp {
                     localStorage.removeItem('bookking_timer_start');
                     localStorage.removeItem('bookking_timer_elapsed');
                     localStorage.removeItem('bookking_session_start');
-                    localStorage.removeItem('bookking_session_data');
+                    localStorage.removeItem('bookking_pending_session');
                     localStorage.removeItem('bookking_screen_state');
                     if (this.components.readingTimer) {
                         clearInterval(this.components.readingTimer);
@@ -220,7 +211,7 @@ class BookKingApp {
                     }
                     this.components.originalSessionStartTime = null;
                     this.components.sessionData = null;
-                    console.log('Timer and screen state cleared');
+                    console.log('Timer, session data and screen state cleared');
                 }
             };
         };
@@ -230,10 +221,8 @@ class BookKingApp {
             console.log('- testScreen.check() - Check current screen state');
             console.log('- testScreen.save() - Save current screen state'); 
             console.log('- testScreen.restore() - Restore screen state');
+            console.log('- testScreen.session() - Check session data state');
             console.log('- testScreen.clear() - Clear screen state');
-        };
-        
-
             
             return {
                 check: () => {
@@ -264,6 +253,31 @@ class BookKingApp {
                     }
                 },
                 
+                session: () => {
+                    const pendingSession = localStorage.getItem('bookking_pending_session');
+                    const currentSession = this.components.sessionData;
+                    
+                    console.log('Session data state:', {
+                        hasPendingSession: !!pendingSession,
+                        hasCurrentSession: !!currentSession,
+                        currentView: this.components.currentView,
+                        currentBookId: this.components.currentBookId
+                    });
+                    
+                    if (pendingSession) {
+                        try {
+                            const parsed = JSON.parse(pendingSession);
+                            console.log('Pending session data:', parsed);
+                        } catch (error) {
+                            console.log('Invalid pending session data:', error);
+                        }
+                    }
+                    
+                    if (currentSession) {
+                        console.log('Current session data:', currentSession);
+                    }
+                },
+                
                 clear: () => {
                     this.components.clearScreenState();
                     console.log('Screen state cleared');
@@ -288,64 +302,9 @@ class BookKingApp {
         console.log('- addSessionForm(bookId) - Open manual add session form');
         console.log('- fixFinishedBooks() - Fix finished books without dateFinished');
         console.log('- testTimer() - Timer testing functions (check, simulate, clear)');
-        console.log('- testScreen() - Screen state testing functions (check, save, restore, clear)');
-        console.log('- showLogs() - Show console logs on screen (for mobile debugging)');
+        console.log('- testScreen() - Screen state testing functions (check, save, restore, session, clear)');
         console.log('- window.bookKingComponents - Access to components');
         console.log('- toggleTheme() - Toggle dark/light theme');
-        
-        // Simple log viewer for mobile debugging (only in non-standalone mode)
-        if (!window.navigator.standalone && !window.matchMedia('(display-mode: standalone)').matches) {
-            window.logs = [];
-            window.originalConsoleLog = console.log;
-            window.originalConsoleError = console.error;
-            
-            console.log = function(...args) {
-                try {
-                    window.logs.push({type: 'log', message: args.join(' '), time: new Date().toLocaleTimeString()});
-                    if (window.logs.length > 50) window.logs.shift(); // Keep only last 50 logs
-                } catch (e) {
-                    // Fail silently if there's an issue
-                }
-                window.originalConsoleLog.apply(console, args);
-            };
-            
-            console.error = function(...args) {
-                try {
-                    window.logs.push({type: 'error', message: args.join(' '), time: new Date().toLocaleTimeString()});
-                    if (window.logs.length > 50) window.logs.shift();
-                } catch (e) {
-                    // Fail silently if there's an issue
-                }
-                window.originalConsoleError.apply(console, args);
-            };
-            
-            window.showLogs = () => {
-                const logWindow = window.open('', '_blank');
-                const logsHtml = window.logs.map(log => 
-                    `<div style="color: ${log.type === 'error' ? 'red' : 'black'}">
-                        [${log.time}] ${log.message}
-                    </div>`
-                ).join('');
-                
-                logWindow.document.write(`
-                    <html>
-                    <head><title>BookKing Logs</title></head>
-                    <body style="font-family: monospace; padding: 10px;">
-                        <h3>Console Logs (last 50 entries)</h3>
-                        <button onclick="location.reload()">Refresh</button>
-                        <div style="margin-top: 10px;">
-                            ${logsHtml || '<div>No logs yet</div>'}
-                        </div>
-                    </body>
-                    </html>
-                `);
-            };
-        } else {
-            // In standalone mode, don't intercept console
-            window.showLogs = () => {
-                alert('Log viewer not available in standalone mode. Use Safari dev tools instead.');
-            };
-        }
             
             // Register service worker for offline functionality
             await this.registerServiceWorker();
@@ -365,9 +324,7 @@ class BookKingApp {
     async registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             try {
-                // Use relative path for standalone mode compatibility
-                const swPath = './sw.js';
-                const registration = await navigator.serviceWorker.register(swPath);
+                const registration = await navigator.serviceWorker.register('/sw.js');
                 console.log('Service Worker registered for offline use:', registration);
                 
                 // Listen for updates
@@ -512,22 +469,8 @@ class BookKingApp {
                 }
             } else if (this.components.currentView === 'newSession') {
                 console.log('Restoring new session screen');
-                // Force re-render the new session screen
-                if (this.components.sessionData) {
-                    this.components.renderNewSessionScreen();
-                } else {
-                    const savedSessionData = localStorage.getItem('bookking_session_data');
-                    if (savedSessionData) {
-                        try {
-                            this.components.sessionData = JSON.parse(savedSessionData);
-                            this.components.sessionData.startTime = new Date(this.components.sessionData.startTime);
-                            this.components.sessionData.finishTime = new Date(this.components.sessionData.finishTime);
-                            this.components.renderNewSessionScreen();
-                        } catch (error) {
-                            console.error('Failed to restore sessionData in handleAppVisible:', error);
-                        }
-                    }
-                }
+                // Don't restore new session screen - let it stay as is
+                // The screen should already be rendered and shouldn't be overridden
                 return;
             }
             
