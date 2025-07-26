@@ -216,6 +216,9 @@ class BookKingComponents {
 
     // Tab switching
     switchTab(tabName) {
+        console.log('switchTab called:', tabName, 'current bookId:', this.currentBookId);
+        console.trace('switchTab call stack'); // This will show us who called it
+        
         // Update active tab
         document.querySelectorAll('.tab-item').forEach(tab => {
             tab.classList.remove('active');
@@ -226,8 +229,27 @@ class BookKingComponents {
 
         // Reset view state when switching to read tab
         if (tabName === 'read') {
+            // DON'T reset currentBookId if we have an active timer session
+            const timerActive = localStorage.getItem('bookking_timer_active') === 'true';
+            const hasSessionBookId = localStorage.getItem('bookking_session_book_id');
+            
+            console.log('Tab switch to read:', {
+                timerActive,
+                hasSessionBookId,
+                currentBookId: this.currentBookId,
+                currentView: this.currentView
+            });
+            
+            if (timerActive || hasSessionBookId) {
+                console.log('PROTECTION: Preserving currentBookId during tab switch - active session detected');
+                console.log('Current bookId:', this.currentBookId, 'Timer active:', timerActive, 'Saved bookId:', hasSessionBookId);
+                // Don't reset currentBookId - preserve it for active session
+            } else {
+                console.log('No active session - resetting currentBookId');
+                this.currentBookId = null; // Only reset if no active session
+            }
+            
             this.currentView = 'main';
-            this.currentBookId = null;
             this.showingArchive = false; // Reset to show active books
             this.isRenderingNewSession = false; // Clear any rendering flags
             
@@ -970,6 +992,28 @@ class BookKingComponents {
     }
 
     finishReading() {
+        console.log('finishReading() called with currentBookId:', this.currentBookId);
+        
+        // EMERGENCY: Try to recover currentBookId BEFORE stopping timer if it's null
+        if (!this.currentBookId) {
+            console.error('EMERGENCY: currentBookId is null at start of finishReading!');
+            
+            // Try multiple recovery sources
+            const savedBookId = localStorage.getItem('bookking_session_book_id');
+            if (savedBookId) {
+                this.currentBookId = savedBookId;
+                console.log('RECOVERED: bookId from localStorage:', savedBookId);
+            } else {
+                const recentSessions = this.storage.getSessions();
+                if (recentSessions.length > 0) {
+                    this.currentBookId = recentSessions[0].bookId;
+                    console.log('RECOVERED: bookId from recent sessions:', this.currentBookId);
+                } else {
+                    console.error('FATAL: No bookId recovery possible!');
+                }
+            }
+        }
+        
         this.stopReadingTimer();
         
         // Prepare session data using ORIGINAL session start time
@@ -990,14 +1034,7 @@ class BookKingComponents {
             localStorage.setItem('bookking_session_book_id', this.currentBookId);
             console.log('CRITICAL: Saved currentBookId for new session:', this.currentBookId);
         } else {
-            console.error('CRITICAL: currentBookId is null when finishing reading!');
-            // Try to find a book ID from recent reading
-            const recentSessions = this.storage.getSessions();
-            if (recentSessions.length > 0) {
-                this.currentBookId = recentSessions[0].bookId;
-                localStorage.setItem('bookking_session_book_id', this.currentBookId);
-                console.log('EMERGENCY: Recovered bookId from recent sessions:', this.currentBookId);
-            }
+            console.error('CRITICAL: Still no currentBookId after recovery attempts!');
         }
         
         console.log('Session prepared for saving:', {
