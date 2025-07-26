@@ -17,7 +17,7 @@ class BookKingComponents {
         this.sessionData = null;
         this.timerVisibilityHandler = null; // For background/foreground timer handling
         this.originalSessionStartTime = null; // Original session start time for saving
-        this.blockAppVisibleHandling = false; // Block handleAppVisible temporarily
+
         this.showingArchive = false; // Track whether we're showing archive or active books
         this.currentBookCover = null; // Store selected book cover
         this.init();
@@ -819,8 +819,6 @@ class BookKingComponents {
         localStorage.setItem('bookking_session_start', this.originalSessionStartTime.getTime());
         localStorage.setItem('bookking_timer_active', 'true');
         
-        console.log('Timer started - original session time saved:', this.originalSessionStartTime);
-        
         this.startTimerInterval();
         
         // Add visibility change handler for this timer session
@@ -921,14 +919,6 @@ class BookKingComponents {
     }
 
     finishReading() {
-        console.log('🟢 finishReading() called');
-        console.log('🔧 Timer state before stop:', {
-            readingTimer: !!this.readingTimer,
-            readingElapsed: this.readingElapsed,
-            originalSessionStart: this.originalSessionStartTime,
-            readingStart: this.readingStartTime
-        });
-        
         this.stopReadingTimer();
         
         // Prepare session data using ORIGINAL session start time
@@ -941,11 +931,8 @@ class BookKingComponents {
             duration: this.readingElapsed
         };
         
-        console.log('💾 SessionData created:', this.sessionData);
-        
         // Save session data to localStorage to survive background/foreground
         localStorage.setItem('bookking_session_data', JSON.stringify(this.sessionData));
-        console.log('💾 SessionData saved to localStorage');
         
         console.log('Session prepared for saving:', {
             originalStart: sessionStartTime,
@@ -955,49 +942,22 @@ class BookKingComponents {
         
         // Clear screen state to prevent restoration conflicts
         this.clearScreenState();
-        console.log('🗑️ Screen state cleared');
         
         this.currentView = 'newSession';
-        console.log('📱 Current view set to newSession');
-        
         this.saveScreenState(); // Save new session screen state
-        console.log('💾 New screen state saved');
-        
-        // Block handleAppVisible for 5 seconds to prevent conflicts
-        this.blockAppVisibleHandling = true;
-        setTimeout(() => {
-            this.blockAppVisibleHandling = false;
-            console.log('🔓 AppVisible handling unblocked');
-        }, 5000);
-        console.log('🚫 AppVisible handling blocked for 5 seconds');
-        
-        console.log('🎬 About to call renderNewSessionScreen...');
         this.renderNewSessionScreen();
-        
-        console.log('✅ finishReading() completed');
     }
 
     renderNewSessionScreen() {
-        console.log('renderNewSessionScreen called');
-        console.log('sessionData:', this.sessionData);
-        console.log('currentBookId:', this.currentBookId);
-        
         this.updateHeader('New Session', false, false, false, true); // Show back and save
         
         const container = document.querySelector('.main-content');
-        if (!container) {
-            console.error('Main content container not found');
-            return;
-        }
+        if (!container) return;
 
         const book = this.storage.getBooks().find(b => b.id === this.currentBookId);
-        if (!book) {
-            console.error('Book not found for ID:', this.currentBookId);
-            return;
-        }
+        if (!book) return;
         
         if (!this.sessionData) {
-            console.error('No session data available');
             // Try to restore from localStorage
             const savedSessionData = localStorage.getItem('bookking_session_data');
             if (savedSessionData) {
@@ -1005,13 +965,13 @@ class BookKingComponents {
                     this.sessionData = JSON.parse(savedSessionData);
                     this.sessionData.startTime = new Date(this.sessionData.startTime);
                     this.sessionData.finishTime = new Date(this.sessionData.finishTime);
-                    console.log('Restored session data in renderNewSessionScreen:', this.sessionData);
+                    console.log('Restored session data in renderNewSessionScreen');
                 } catch (error) {
                     console.error('Failed to restore session data in render:', error);
                     return;
                 }
             } else {
-                console.error('No session data in localStorage either');
+                console.error('No session data available');
                 return;
             }
         }
@@ -1058,12 +1018,7 @@ class BookKingComponents {
             </div>
         `;
 
-        console.log('New session screen HTML rendered');
-        console.log('Container innerHTML length:', container.innerHTML.length);
-        
         this.bindNewSessionEvents();
-        
-        console.log('New session events bound');
     }
 
     formatSessionTime(date) {
@@ -1092,35 +1047,17 @@ class BookKingComponents {
     }
 
     bindNewSessionEvents() {
-        console.log('🔗 bindNewSessionEvents() called');
-        
         // Back button
         const backButton = document.getElementById('backButton');
         if (backButton) {
             backButton.addEventListener('click', () => this.goBackToReading());
-            console.log('✅ Back button event bound');
-        } else {
-            console.log('❌ Back button not found');
         }
 
         // Save button
         const saveButton = document.getElementById('saveSession');
         if (saveButton) {
             saveButton.addEventListener('click', () => this.saveReadingSession());
-            console.log('✅ Save button event bound');
-        } else {
-            console.log('❌ Save button not found');
         }
-        
-        // Check for lastPageRead input
-        const lastPageInput = document.getElementById('lastPageRead');
-        if (lastPageInput) {
-            console.log('✅ Last page input found:', lastPageInput.value);
-        } else {
-            console.log('❌ Last page input not found');
-        }
-        
-        console.log('🔗 bindNewSessionEvents() completed');
     }
 
     goBackToReading() {
@@ -1201,8 +1138,6 @@ class BookKingComponents {
     }
 
     pauseReading() {
-        console.log('pauseReading() called - timer running:', !!this.readingTimer);
-        
         if (this.readingTimer) {
             // Pause timer but keep state for resuming
             this.pauseReadingTimer();
@@ -1215,11 +1150,7 @@ class BookKingComponents {
                 // Clear any existing onclick handler before setting new one
                 pauseButton.onclick = null;
                 pauseButton.onclick = () => this.resumeReading();
-                
-                console.log('Button changed to Resume');
             }
-        } else {
-            console.log('No timer to pause');
         }
     }
     
@@ -1236,25 +1167,17 @@ class BookKingComponents {
             // Save elapsed time to localStorage for persistence
             localStorage.setItem('bookking_timer_elapsed', this.readingElapsed.toString());
         }
-        
-        console.log('Timer paused at', this.readingElapsed, 'seconds');
     }
 
     resumeReading() {
-        console.log('Resuming timer - current elapsed:', this.readingElapsed, 'seconds');
-        
         // Restore elapsed time from localStorage if needed
         const savedElapsed = localStorage.getItem('bookking_timer_elapsed');
         if (savedElapsed && !this.readingElapsed) {
             this.readingElapsed = parseInt(savedElapsed);
-            console.log('Restored elapsed time from localStorage:', this.readingElapsed, 'seconds');
         }
         
         // Calculate new start time by subtracting elapsed time from now
         this.readingStartTime = new Date(Date.now() - (this.readingElapsed * 1000));
-        
-        console.log('Calculated new start time:', this.readingStartTime);
-        console.log('Should show elapsed time:', this.readingElapsed, 'seconds from start time');
         
         // Update localStorage with new start time (but keep original session start)
         localStorage.setItem('bookking_timer_start', this.readingStartTime.getTime());
@@ -1283,11 +1206,7 @@ class BookKingComponents {
             // Clear any existing onclick handler before setting new one
             pauseButton.onclick = null;
             pauseButton.onclick = () => this.pauseReading();
-            
-            console.log('Button changed back to Pause');
         }
-        
-        console.log('Timer resumed successfully');
     }
 
     stopReadingTimer() {

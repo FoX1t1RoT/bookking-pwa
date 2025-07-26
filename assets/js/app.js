@@ -224,85 +224,7 @@ class BookKingApp {
             console.log('- testScreen.clear() - Clear screen state');
         };
         
-        // Add debug button for mobile debugging
-        window.addDebugButton = () => {
-            if (document.getElementById('debugButton')) return;
-            
-            const debugButton = document.createElement('button');
-            debugButton.id = 'debugButton';
-            debugButton.textContent = '🐛 Debug';
-            debugButton.style.cssText = `
-                position: fixed;
-                top: max(50px, calc(env(safe-area-inset-top) + 50px));
-                right: max(10px, env(safe-area-inset-right));
-                background: #FF3B30;
-                color: white;
-                border: none;
-                padding: 8px 12px;
-                border-radius: 6px;
-                font-size: 12px;
-                z-index: 9999;
-                cursor: pointer;
-            `;
-            
-            debugButton.addEventListener('click', () => {
-                const logs = this.getDebugInfo();
-                const logWindow = window.open('', '_blank');
-                logWindow.document.write(`
-                    <html>
-                    <head><title>BookKing Debug Logs</title></head>
-                    <body style="font-family: monospace; white-space: pre-wrap; padding: 10px;">
-                    ${logs}
-                    </body>
-                    </html>
-                `);
-            });
-            
-            document.body.appendChild(debugButton);
-            console.log('Debug button added to screen');
-        };
-        
-        window.getDebugInfo = () => {
-            const components = this.components;
-            const localStorage = window.localStorage;
-            
-            return `
-🐛 BOOKKING DEBUG INFO
-====================
 
-📱 CURRENT STATE:
-- currentView: ${components.currentView}
-- currentTab: ${components.currentTab}  
-- currentBookId: ${components.currentBookId}
-- sessionData: ${components.sessionData ? 'EXISTS' : 'NULL'}
-
-⏰ TIMER STATE:
-- readingTimer: ${!!components.readingTimer}
-- readingElapsed: ${components.readingElapsed}
-- originalSessionStart: ${components.originalSessionStartTime}
-- blockAppVisible: ${components.blockAppVisibleHandling}
-
-💾 LOCALSTORAGE:
-- timer_active: ${localStorage.getItem('bookking_timer_active')}
-- timer_start: ${localStorage.getItem('bookking_timer_start')}
-- session_start: ${localStorage.getItem('bookking_session_start')}
-- session_data: ${localStorage.getItem('bookking_session_data') ? 'EXISTS' : 'NULL'}
-- screen_state: ${localStorage.getItem('bookking_screen_state') ? 'EXISTS' : 'NULL'}
-
-📋 SESSION DATA DETAILS:
-${components.sessionData ? JSON.stringify(components.sessionData, null, 2) : 'No session data'}
-
-🔍 DOM ELEMENTS:
-- Main container: ${!!document.querySelector('.main-content')}
-- Timer display: ${!!document.getElementById('timerDisplay')}
-- Done button: ${!!document.getElementById('doneReading')}
-- Last page input: ${!!document.getElementById('lastPageRead')}
-- Save button: ${!!document.getElementById('saveSession')}
-
-📚 BOOKS:
-${JSON.stringify(components.storage.getBooks(), null, 2)}
-            `.trim();
-        };
             
             return {
                 check: () => {
@@ -358,16 +280,8 @@ ${JSON.stringify(components.storage.getBooks(), null, 2)}
         console.log('- fixFinishedBooks() - Fix finished books without dateFinished');
         console.log('- testTimer() - Timer testing functions (check, simulate, clear)');
         console.log('- testScreen() - Screen state testing functions (check, save, restore, clear)');
-        console.log('- addDebugButton() - Add debug button to screen for mobile debugging');
         console.log('- window.bookKingComponents - Access to components');
         console.log('- toggleTheme() - Toggle dark/light theme');
-        
-        // Auto-add debug button for mobile debugging
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            setTimeout(() => {
-                window.addDebugButton();
-            }, 2000);
-        }
             
             // Register service worker for offline functionality
             await this.registerServiceWorker();
@@ -508,20 +422,10 @@ ${JSON.stringify(components.storage.getBooks(), null, 2)}
     }
 
     handleAppVisible() {
-        console.log('🔄 handleAppVisible() called');
-        console.log('🔍 Current view before restore:', this.components?.currentView);
-        
-        // Check if handling is blocked
-        if (this.components?.blockAppVisibleHandling) {
-            console.log('🚫 handleAppVisible is blocked, skipping...');
-            return;
-        }
-        
         // Try to restore screen state first
         if (this.components && this.components.restoreScreenState()) {
             // Screen state was restored - load the appropriate screen
-            console.log('📱 Screen state restored successfully');
-            console.log('🔍 Current view after restore:', this.components.currentView);
+            console.log('Restoring screen state after background return');
             
             // Handle different view types
             if (this.components.currentView === 'reading' && 
@@ -541,21 +445,17 @@ ${JSON.stringify(components.storage.getBooks(), null, 2)}
                     return;
                 }
             } else if (this.components.currentView === 'newSession') {
-                console.log('Detected newSession view during background return - preventing screen override');
-                // Completely prevent any screen restoration for newSession
-                // Force re-render the new session screen immediately
+                console.log('Restoring new session screen');
+                // Force re-render the new session screen
                 if (this.components.sessionData) {
-                    console.log('Re-rendering new session screen with existing sessionData');
                     this.components.renderNewSessionScreen();
                 } else {
-                    console.log('No sessionData found, trying to restore...');
                     const savedSessionData = localStorage.getItem('bookking_session_data');
                     if (savedSessionData) {
                         try {
                             this.components.sessionData = JSON.parse(savedSessionData);
                             this.components.sessionData.startTime = new Date(this.components.sessionData.startTime);
                             this.components.sessionData.finishTime = new Date(this.components.sessionData.finishTime);
-                            console.log('SessionData restored in handleAppVisible, re-rendering...');
                             this.components.renderNewSessionScreen();
                         } catch (error) {
                             console.error('Failed to restore sessionData in handleAppVisible:', error);
