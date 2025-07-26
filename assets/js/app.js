@@ -222,6 +222,87 @@ class BookKingApp {
             console.log('- testScreen.save() - Save current screen state'); 
             console.log('- testScreen.restore() - Restore screen state');
             console.log('- testScreen.clear() - Clear screen state');
+        };
+        
+        // Add debug button for mobile debugging
+        window.addDebugButton = () => {
+            if (document.getElementById('debugButton')) return;
+            
+            const debugButton = document.createElement('button');
+            debugButton.id = 'debugButton';
+            debugButton.textContent = '🐛 Debug';
+            debugButton.style.cssText = `
+                position: fixed;
+                top: max(50px, calc(env(safe-area-inset-top) + 50px));
+                right: max(10px, env(safe-area-inset-right));
+                background: #FF3B30;
+                color: white;
+                border: none;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                z-index: 9999;
+                cursor: pointer;
+            `;
+            
+            debugButton.addEventListener('click', () => {
+                const logs = this.getDebugInfo();
+                const logWindow = window.open('', '_blank');
+                logWindow.document.write(`
+                    <html>
+                    <head><title>BookKing Debug Logs</title></head>
+                    <body style="font-family: monospace; white-space: pre-wrap; padding: 10px;">
+                    ${logs}
+                    </body>
+                    </html>
+                `);
+            });
+            
+            document.body.appendChild(debugButton);
+            console.log('Debug button added to screen');
+        };
+        
+        window.getDebugInfo = () => {
+            const components = this.components;
+            const localStorage = window.localStorage;
+            
+            return `
+🐛 BOOKKING DEBUG INFO
+====================
+
+📱 CURRENT STATE:
+- currentView: ${components.currentView}
+- currentTab: ${components.currentTab}  
+- currentBookId: ${components.currentBookId}
+- sessionData: ${components.sessionData ? 'EXISTS' : 'NULL'}
+
+⏰ TIMER STATE:
+- readingTimer: ${!!components.readingTimer}
+- readingElapsed: ${components.readingElapsed}
+- originalSessionStart: ${components.originalSessionStartTime}
+- blockAppVisible: ${components.blockAppVisibleHandling}
+
+💾 LOCALSTORAGE:
+- timer_active: ${localStorage.getItem('bookking_timer_active')}
+- timer_start: ${localStorage.getItem('bookking_timer_start')}
+- session_start: ${localStorage.getItem('bookking_session_start')}
+- session_data: ${localStorage.getItem('bookking_session_data') ? 'EXISTS' : 'NULL'}
+- screen_state: ${localStorage.getItem('bookking_screen_state') ? 'EXISTS' : 'NULL'}
+
+📋 SESSION DATA DETAILS:
+${components.sessionData ? JSON.stringify(components.sessionData, null, 2) : 'No session data'}
+
+🔍 DOM ELEMENTS:
+- Main container: ${!!document.querySelector('.main-content')}
+- Timer display: ${!!document.getElementById('timerDisplay')}
+- Done button: ${!!document.getElementById('doneReading')}
+- Last page input: ${!!document.getElementById('lastPageRead')}
+- Save button: ${!!document.getElementById('saveSession')}
+
+📚 BOOKS:
+${JSON.stringify(components.storage.getBooks(), null, 2)}
+            `.trim();
+        };
             
             return {
                 check: () => {
@@ -277,8 +358,16 @@ class BookKingApp {
         console.log('- fixFinishedBooks() - Fix finished books without dateFinished');
         console.log('- testTimer() - Timer testing functions (check, simulate, clear)');
         console.log('- testScreen() - Screen state testing functions (check, save, restore, clear)');
+        console.log('- addDebugButton() - Add debug button to screen for mobile debugging');
         console.log('- window.bookKingComponents - Access to components');
         console.log('- toggleTheme() - Toggle dark/light theme');
+        
+        // Auto-add debug button for mobile debugging
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            setTimeout(() => {
+                window.addDebugButton();
+            }, 2000);
+        }
             
             // Register service worker for offline functionality
             await this.registerServiceWorker();
