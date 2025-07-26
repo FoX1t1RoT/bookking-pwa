@@ -256,12 +256,17 @@ class BookKingApp {
                 session: () => {
                     const pendingSession = localStorage.getItem('bookking_pending_session');
                     const currentSession = this.components.sessionData;
+                    const mainContent = document.querySelector('.main-content');
+                    const hasSessionContent = mainContent && mainContent.innerHTML.includes('session-pages-card');
                     
                     console.log('Session data state:', {
                         hasPendingSession: !!pendingSession,
                         hasCurrentSession: !!currentSession,
                         currentView: this.components.currentView,
-                        currentBookId: this.components.currentBookId
+                        currentBookId: this.components.currentBookId,
+                        isRenderingNewSession: this.components.isRenderingNewSession,
+                        hasSessionContent: hasSessionContent,
+                        mainContentLength: mainContent ? mainContent.innerHTML.length : 0
                     });
                     
                     if (pendingSession) {
@@ -445,6 +450,12 @@ class BookKingApp {
     }
 
     handleAppVisible() {
+        // Don't interfere if we're in the middle of rendering new session
+        if (this.components && this.components.isRenderingNewSession) {
+            console.log('Skipping handleAppVisible - new session is being rendered');
+            return;
+        }
+        
         // Try to restore screen state first
         if (this.components && this.components.restoreScreenState()) {
             // Screen state was restored - load the appropriate screen
@@ -468,9 +479,22 @@ class BookKingApp {
                     return;
                 }
             } else if (this.components.currentView === 'newSession') {
-                console.log('Restoring new session screen');
-                // Don't restore new session screen - let it stay as is
-                // The screen should already be rendered and shouldn't be overridden
+                console.log('Detected newSession view - avoiding screen override');
+                // Don't override new session screen - it should stay as rendered
+                // Check if screen content is actually rendered correctly
+                const mainContent = document.querySelector('.main-content');
+                const hasSessionContent = mainContent && mainContent.innerHTML.includes('session-pages-card');
+                
+                console.log('New session content check:', {
+                    hasMainContent: !!mainContent,
+                    hasSessionContent: hasSessionContent,
+                    contentLength: mainContent ? mainContent.innerHTML.length : 0
+                });
+                
+                if (!hasSessionContent && this.components.sessionData) {
+                    console.log('New session content missing, re-rendering...');
+                    this.components.renderNewSessionScreen();
+                }
                 return;
             }
             

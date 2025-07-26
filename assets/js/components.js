@@ -17,6 +17,7 @@ class BookKingComponents {
         this.sessionData = null;
         this.timerVisibilityHandler = null; // For background/foreground timer handling
         this.originalSessionStartTime = null; // Original session start time for saving
+        this.isRenderingNewSession = false; // Flag to prevent conflicts during new session rendering
         this.showingArchive = false; // Track whether we're showing archive or active books
         this.currentBookCover = null; // Store selected book cover
         this.init();
@@ -191,6 +192,7 @@ class BookKingComponents {
             this.currentView = 'main';
             this.currentBookId = null;
             this.showingArchive = false; // Reset to show active books
+            this.isRenderingNewSession = false; // Clear any rendering flags
             
             // Force restore add button after a delay to ensure it's visible
             setTimeout(() => {
@@ -840,6 +842,12 @@ class BookKingComponents {
         
         this.timerVisibilityHandler = () => {
             if (!document.hidden && this.readingStartTime) {
+                // Don't interfere if we're rendering new session
+                if (this.isRenderingNewSession) {
+                    console.log('Skipping timer visibility handler - new session is being rendered');
+                    return;
+                }
+                
                 // App became visible - recalculate time and resume updates
                 this.updateTimerFromStartTime();
                 
@@ -931,9 +939,28 @@ class BookKingComponents {
         
         this.currentView = 'newSession';
         this.saveScreenState(); // Save new session screen state
-        this.renderNewSessionScreen();
         
-        console.log('Switched to new session screen with saved sessionData');
+        console.log('About to render new session screen...');
+        console.log('Current view:', this.currentView);
+        console.log('Session data available:', !!this.sessionData);
+        console.log('Book ID:', this.currentBookId);
+        
+        // Set flag to prevent other systems from interfering
+        this.isRenderingNewSession = true;
+        
+        // Add small delay to ensure DOM is ready and avoid conflicts
+        setTimeout(() => {
+            console.log('Rendering new session screen after delay...');
+            this.renderNewSessionScreen();
+            
+            // Clear flag after rendering is complete
+            setTimeout(() => {
+                this.isRenderingNewSession = false;
+                console.log('New session rendering flag cleared');
+            }, 200);
+        }, 100);
+        
+        console.log('New session screen rendering initiated');
     }
 
     renderNewSessionScreen() {
@@ -1002,7 +1029,30 @@ class BookKingComponents {
             </div>
         `;
 
-        console.log('New session screen rendered successfully');
+        console.log('New session screen HTML set, verifying DOM update...');
+        
+        // Verify the content was actually set
+        setTimeout(() => {
+            const mainContent = document.querySelector('.main-content');
+            const hasSessionContent = mainContent && mainContent.innerHTML.includes('session-pages-card');
+            const lastPageInput = document.getElementById('lastPageRead');
+            
+            console.log('DOM verification after render:', {
+                hasMainContent: !!mainContent,
+                hasSessionContent: hasSessionContent,
+                hasLastPageInput: !!lastPageInput,
+                contentLength: mainContent ? mainContent.innerHTML.length : 0,
+                currentView: this.currentView
+            });
+            
+            if (!hasSessionContent) {
+                console.error('❌ New session content NOT found in DOM after rendering!');
+                console.log('Current main-content innerHTML:', mainContent ? mainContent.innerHTML : 'NO MAIN CONTENT');
+            } else {
+                console.log('✅ New session screen rendered successfully');
+            }
+        }, 50);
+        
         this.bindNewSessionEvents();
     }
 
@@ -1110,6 +1160,7 @@ class BookKingComponents {
         // Clear pending session data after successful save
         localStorage.removeItem('bookking_pending_session');
         this.sessionData = null;
+        this.isRenderingNewSession = false; // Clear rendering flag
         console.log('Session saved and pending data cleared');
 
         // Show appropriate success message
