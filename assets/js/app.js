@@ -280,8 +280,48 @@ class BookKingApp {
         console.log('- fixFinishedBooks() - Fix finished books without dateFinished');
         console.log('- testTimer() - Timer testing functions (check, simulate, clear)');
         console.log('- testScreen() - Screen state testing functions (check, save, restore, clear)');
+        console.log('- showLogs() - Show console logs on screen (for mobile debugging)');
         console.log('- window.bookKingComponents - Access to components');
         console.log('- toggleTheme() - Toggle dark/light theme');
+        
+        // Simple log viewer for mobile debugging
+        window.logs = [];
+        window.originalConsoleLog = console.log;
+        window.originalConsoleError = console.error;
+        
+        console.log = function(...args) {
+            window.logs.push({type: 'log', message: args.join(' '), time: new Date().toLocaleTimeString()});
+            if (window.logs.length > 50) window.logs.shift(); // Keep only last 50 logs
+            window.originalConsoleLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            window.logs.push({type: 'error', message: args.join(' '), time: new Date().toLocaleTimeString()});
+            if (window.logs.length > 50) window.logs.shift();
+            window.originalConsoleError.apply(console, args);
+        };
+        
+        window.showLogs = () => {
+            const logWindow = window.open('', '_blank');
+            const logsHtml = window.logs.map(log => 
+                `<div style="color: ${log.type === 'error' ? 'red' : 'black'}">
+                    [${log.time}] ${log.message}
+                </div>`
+            ).join('');
+            
+            logWindow.document.write(`
+                <html>
+                <head><title>BookKing Logs</title></head>
+                <body style="font-family: monospace; padding: 10px;">
+                    <h3>Console Logs (last 50 entries)</h3>
+                    <button onclick="location.reload()">Refresh</button>
+                    <div style="margin-top: 10px;">
+                        ${logsHtml || '<div>No logs yet</div>'}
+                    </div>
+                </body>
+                </html>
+            `);
+        };
             
             // Register service worker for offline functionality
             await this.registerServiceWorker();
