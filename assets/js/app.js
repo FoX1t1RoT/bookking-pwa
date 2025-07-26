@@ -116,25 +116,33 @@ class BookKingApp {
             console.log('⏰ Timer Test Functions:');
             console.log('- testTimer.check() - Check timer state');
             console.log('- testTimer.simulate() - Simulate background/foreground');
+            console.log('- testTimer.pause() - Test pause functionality');
+            console.log('- testTimer.resume() - Test resume functionality');
             console.log('- testTimer.clear() - Clear timer state');
             
             return {
                 check: () => {
                     const active = localStorage.getItem('bookking_timer_active');
                     const start = localStorage.getItem('bookking_timer_start');
-                    const elapsed = this.components.readingElapsed;
+                    const savedElapsed = localStorage.getItem('bookking_timer_elapsed');
+                    const currentElapsed = this.components.readingElapsed;
                     const running = !!this.components.readingTimer;
                     
                     console.log('Timer state:', {
                         active: active === 'true',
                         startTime: start ? new Date(parseInt(start)) : null,
-                        elapsed: elapsed + ' seconds',
+                        currentElapsed: currentElapsed + ' seconds',
+                        savedElapsed: savedElapsed ? savedElapsed + ' seconds' : 'none',
                         intervalRunning: running
                     });
                     
-                    if (active === 'true' && start) {
+                    if (active === 'true' && start && !savedElapsed) {
                         const realElapsed = Math.floor((Date.now() - parseInt(start)) / 1000);
-                        console.log('Real elapsed time:', realElapsed + ' seconds');
+                        console.log('Real elapsed time (running timer):', realElapsed + ' seconds');
+                    }
+                    
+                    if (savedElapsed) {
+                        console.log('Timer is paused at:', savedElapsed + ' seconds');
                     }
                 },
                 
@@ -150,9 +158,28 @@ class BookKingApp {
                     }, 2000);
                 },
                 
+                pause: () => {
+                    if (this.components.readingTimer) {
+                        console.log('Testing pause functionality...');
+                        this.components.pauseReading();
+                    } else {
+                        console.log('No active timer to pause');
+                    }
+                },
+                
+                resume: () => {
+                    if (!this.components.readingTimer) {
+                        console.log('Testing resume functionality...');
+                        this.components.resumeReading();
+                    } else {
+                        console.log('Timer is already running');
+                    }
+                },
+                
                 clear: () => {
                     localStorage.removeItem('bookking_timer_active');
                     localStorage.removeItem('bookking_timer_start');
+                    localStorage.removeItem('bookking_timer_elapsed');
                     localStorage.removeItem('bookking_screen_state');
                     if (this.components.readingTimer) {
                         clearInterval(this.components.readingTimer);
