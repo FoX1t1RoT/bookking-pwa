@@ -9,11 +9,20 @@ class BookKingApp {
 
     async init() {
         try {
+            console.log('BookKing App initialization started');
+            console.log('Standalone mode:', window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches);
+            
             // Initialize storage
             this.storage = window.bookKingStorage;
+            if (!this.storage) {
+                throw new Error('Storage not available');
+            }
             
             // Initialize components
             this.components = new BookKingComponents(this.storage);
+            if (!this.components) {
+                throw new Error('Components not initialized');
+            }
             
             // Initialize dark theme
             this.initializeTheme();
@@ -284,44 +293,59 @@ class BookKingApp {
         console.log('- window.bookKingComponents - Access to components');
         console.log('- toggleTheme() - Toggle dark/light theme');
         
-        // Simple log viewer for mobile debugging
-        window.logs = [];
-        window.originalConsoleLog = console.log;
-        window.originalConsoleError = console.error;
-        
-        console.log = function(...args) {
-            window.logs.push({type: 'log', message: args.join(' '), time: new Date().toLocaleTimeString()});
-            if (window.logs.length > 50) window.logs.shift(); // Keep only last 50 logs
-            window.originalConsoleLog.apply(console, args);
-        };
-        
-        console.error = function(...args) {
-            window.logs.push({type: 'error', message: args.join(' '), time: new Date().toLocaleTimeString()});
-            if (window.logs.length > 50) window.logs.shift();
-            window.originalConsoleError.apply(console, args);
-        };
-        
-        window.showLogs = () => {
-            const logWindow = window.open('', '_blank');
-            const logsHtml = window.logs.map(log => 
-                `<div style="color: ${log.type === 'error' ? 'red' : 'black'}">
-                    [${log.time}] ${log.message}
-                </div>`
-            ).join('');
+        // Simple log viewer for mobile debugging (only in non-standalone mode)
+        if (!window.navigator.standalone && !window.matchMedia('(display-mode: standalone)').matches) {
+            window.logs = [];
+            window.originalConsoleLog = console.log;
+            window.originalConsoleError = console.error;
             
-            logWindow.document.write(`
-                <html>
-                <head><title>BookKing Logs</title></head>
-                <body style="font-family: monospace; padding: 10px;">
-                    <h3>Console Logs (last 50 entries)</h3>
-                    <button onclick="location.reload()">Refresh</button>
-                    <div style="margin-top: 10px;">
-                        ${logsHtml || '<div>No logs yet</div>'}
-                    </div>
-                </body>
-                </html>
-            `);
-        };
+            console.log = function(...args) {
+                try {
+                    window.logs.push({type: 'log', message: args.join(' '), time: new Date().toLocaleTimeString()});
+                    if (window.logs.length > 50) window.logs.shift(); // Keep only last 50 logs
+                } catch (e) {
+                    // Fail silently if there's an issue
+                }
+                window.originalConsoleLog.apply(console, args);
+            };
+            
+            console.error = function(...args) {
+                try {
+                    window.logs.push({type: 'error', message: args.join(' '), time: new Date().toLocaleTimeString()});
+                    if (window.logs.length > 50) window.logs.shift();
+                } catch (e) {
+                    // Fail silently if there's an issue
+                }
+                window.originalConsoleError.apply(console, args);
+            };
+            
+            window.showLogs = () => {
+                const logWindow = window.open('', '_blank');
+                const logsHtml = window.logs.map(log => 
+                    `<div style="color: ${log.type === 'error' ? 'red' : 'black'}">
+                        [${log.time}] ${log.message}
+                    </div>`
+                ).join('');
+                
+                logWindow.document.write(`
+                    <html>
+                    <head><title>BookKing Logs</title></head>
+                    <body style="font-family: monospace; padding: 10px;">
+                        <h3>Console Logs (last 50 entries)</h3>
+                        <button onclick="location.reload()">Refresh</button>
+                        <div style="margin-top: 10px;">
+                            ${logsHtml || '<div>No logs yet</div>'}
+                        </div>
+                    </body>
+                    </html>
+                `);
+            };
+        } else {
+            // In standalone mode, don't intercept console
+            window.showLogs = () => {
+                alert('Log viewer not available in standalone mode. Use Safari dev tools instead.');
+            };
+        }
             
             // Register service worker for offline functionality
             await this.registerServiceWorker();
@@ -341,7 +365,9 @@ class BookKingApp {
     async registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             try {
-                const registration = await navigator.serviceWorker.register('/sw.js');
+                // Use relative path for standalone mode compatibility
+                const swPath = './sw.js';
+                const registration = await navigator.serviceWorker.register(swPath);
                 console.log('Service Worker registered for offline use:', registration);
                 
                 // Listen for updates
