@@ -17,6 +17,7 @@ class BookKingComponents {
         this.sessionData = null;
         this.timerVisibilityHandler = null; // For background/foreground timer handling
         this.originalSessionStartTime = null; // Original session start time for saving
+        this.blockAppVisibleHandling = false; // Block handleAppVisible temporarily
         this.showingArchive = false; // Track whether we're showing archive or active books
         this.currentBookCover = null; // Store selected book cover
         this.init();
@@ -920,6 +921,14 @@ class BookKingComponents {
     }
 
     finishReading() {
+        console.log('🟢 finishReading() called');
+        console.log('🔧 Timer state before stop:', {
+            readingTimer: !!this.readingTimer,
+            readingElapsed: this.readingElapsed,
+            originalSessionStart: this.originalSessionStartTime,
+            readingStart: this.readingStartTime
+        });
+        
         this.stopReadingTimer();
         
         // Prepare session data using ORIGINAL session start time
@@ -932,8 +941,11 @@ class BookKingComponents {
             duration: this.readingElapsed
         };
         
+        console.log('💾 SessionData created:', this.sessionData);
+        
         // Save session data to localStorage to survive background/foreground
         localStorage.setItem('bookking_session_data', JSON.stringify(this.sessionData));
+        console.log('💾 SessionData saved to localStorage');
         
         console.log('Session prepared for saving:', {
             originalStart: sessionStartTime,
@@ -943,12 +955,26 @@ class BookKingComponents {
         
         // Clear screen state to prevent restoration conflicts
         this.clearScreenState();
+        console.log('🗑️ Screen state cleared');
         
         this.currentView = 'newSession';
+        console.log('📱 Current view set to newSession');
+        
         this.saveScreenState(); // Save new session screen state
+        console.log('💾 New screen state saved');
+        
+        // Block handleAppVisible for 5 seconds to prevent conflicts
+        this.blockAppVisibleHandling = true;
+        setTimeout(() => {
+            this.blockAppVisibleHandling = false;
+            console.log('🔓 AppVisible handling unblocked');
+        }, 5000);
+        console.log('🚫 AppVisible handling blocked for 5 seconds');
+        
+        console.log('🎬 About to call renderNewSessionScreen...');
         this.renderNewSessionScreen();
         
-        console.log('Switched to new session screen');
+        console.log('✅ finishReading() completed');
     }
 
     renderNewSessionScreen() {
@@ -1066,17 +1092,35 @@ class BookKingComponents {
     }
 
     bindNewSessionEvents() {
+        console.log('🔗 bindNewSessionEvents() called');
+        
         // Back button
         const backButton = document.getElementById('backButton');
         if (backButton) {
             backButton.addEventListener('click', () => this.goBackToReading());
+            console.log('✅ Back button event bound');
+        } else {
+            console.log('❌ Back button not found');
         }
 
         // Save button
         const saveButton = document.getElementById('saveSession');
         if (saveButton) {
             saveButton.addEventListener('click', () => this.saveReadingSession());
+            console.log('✅ Save button event bound');
+        } else {
+            console.log('❌ Save button not found');
         }
+        
+        // Check for lastPageRead input
+        const lastPageInput = document.getElementById('lastPageRead');
+        if (lastPageInput) {
+            console.log('✅ Last page input found:', lastPageInput.value);
+        } else {
+            console.log('❌ Last page input not found');
+        }
+        
+        console.log('🔗 bindNewSessionEvents() completed');
     }
 
     goBackToReading() {

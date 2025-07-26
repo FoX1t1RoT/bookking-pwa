@@ -419,10 +419,20 @@ class BookKingApp {
     }
 
     handleAppVisible() {
+        console.log('🔄 handleAppVisible() called');
+        console.log('🔍 Current view before restore:', this.components?.currentView);
+        
+        // Check if handling is blocked
+        if (this.components?.blockAppVisibleHandling) {
+            console.log('🚫 handleAppVisible is blocked, skipping...');
+            return;
+        }
+        
         // Try to restore screen state first
         if (this.components && this.components.restoreScreenState()) {
             // Screen state was restored - load the appropriate screen
-            console.log('Restoring screen state after background return');
+            console.log('📱 Screen state restored successfully');
+            console.log('🔍 Current view after restore:', this.components.currentView);
             
             // Handle different view types
             if (this.components.currentView === 'reading' && 
@@ -442,9 +452,27 @@ class BookKingApp {
                     return;
                 }
             } else if (this.components.currentView === 'newSession') {
-                console.log('Restoring new session screen');
-                // Don't restore new session screen - let it stay as is
-                // The screen should already be rendered and shouldn't be overridden
+                console.log('Detected newSession view during background return - preventing screen override');
+                // Completely prevent any screen restoration for newSession
+                // Force re-render the new session screen immediately
+                if (this.components.sessionData) {
+                    console.log('Re-rendering new session screen with existing sessionData');
+                    this.components.renderNewSessionScreen();
+                } else {
+                    console.log('No sessionData found, trying to restore...');
+                    const savedSessionData = localStorage.getItem('bookking_session_data');
+                    if (savedSessionData) {
+                        try {
+                            this.components.sessionData = JSON.parse(savedSessionData);
+                            this.components.sessionData.startTime = new Date(this.components.sessionData.startTime);
+                            this.components.sessionData.finishTime = new Date(this.components.sessionData.finishTime);
+                            console.log('SessionData restored in handleAppVisible, re-rendering...');
+                            this.components.renderNewSessionScreen();
+                        } catch (error) {
+                            console.error('Failed to restore sessionData in handleAppVisible:', error);
+                        }
+                    }
+                }
                 return;
             }
             
