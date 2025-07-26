@@ -78,6 +78,11 @@ class BookKingComponents {
             timestamp: Date.now()
         };
         
+        // Also save bookId separately for new session recovery
+        if (this.currentView === 'newSession' && this.currentBookId) {
+            localStorage.setItem('bookking_session_book_id', this.currentBookId);
+        }
+        
         localStorage.setItem('bookking_screen_state', JSON.stringify(screenState));
         console.log('Screen state saved:', screenState);
     }
@@ -101,6 +106,15 @@ class BookKingComponents {
             this.currentBookId = screenState.currentBookId;
             this.currentTab = screenState.currentTab;
             this.showingArchive = screenState.showingArchive;
+            
+            // If currentBookId is null but we're in newSession, try to restore from other sources
+            if (this.currentView === 'newSession' && !this.currentBookId) {
+                const savedBookId = localStorage.getItem('bookking_session_book_id');
+                if (savedBookId) {
+                    this.currentBookId = savedBookId;
+                    console.log('Restored currentBookId from session storage:', savedBookId);
+                }
+            }
             
             console.log('Screen state restored:', screenState);
             return true;
@@ -979,10 +993,35 @@ class BookKingComponents {
             return;
         }
 
-        const book = this.storage.getBooks().find(b => b.id === this.currentBookId);
+        // Try to get book ID from various sources if currentBookId is null
+        let bookId = this.currentBookId;
+        
+        if (!bookId) {
+            // Try to get from saved session book ID
+            bookId = localStorage.getItem('bookking_session_book_id');
+            console.log('Trying bookId from session storage:', bookId);
+        }
+        
+        if (!bookId && this.sessionData && this.sessionData.startTime) {
+            // Try to find active book from recent sessions as fallback
+            const recentSessions = this.storage.getSessions();
+            if (recentSessions.length > 0) {
+                bookId = recentSessions[0].bookId;
+                console.log('Trying bookId from most recent session:', bookId);
+            }
+        }
+        
+        const book = this.storage.getBooks().find(b => b.id === bookId);
         if (!book) {
-            console.error('Cannot render new session screen: book not found for ID:', this.currentBookId);
+            console.error('Cannot render new session screen: book not found for ID:', bookId);
+            console.log('Available books:', this.storage.getBooks().map(b => ({id: b.id, title: b.title})));
             return;
+        }
+        
+        // Update currentBookId if we found the book through fallback
+        if (bookId && !this.currentBookId) {
+            this.currentBookId = bookId;
+            console.log('Updated currentBookId to:', bookId);
         }
         
         console.log('Rendering new session screen for book:', book.title);
@@ -1159,6 +1198,7 @@ class BookKingComponents {
 
         // Clear pending session data after successful save
         localStorage.removeItem('bookking_pending_session');
+        localStorage.removeItem('bookking_session_book_id');
         this.sessionData = null;
         this.isRenderingNewSession = false; // Clear rendering flag
         console.log('Session saved and pending data cleared');
@@ -1280,6 +1320,7 @@ class BookKingComponents {
         localStorage.removeItem('bookking_timer_elapsed');
         localStorage.removeItem('bookking_session_start');
         localStorage.removeItem('bookking_pending_session');
+        localStorage.removeItem('bookking_session_book_id');
         
         // Clear screen state since reading session is ending
         this.clearScreenState();

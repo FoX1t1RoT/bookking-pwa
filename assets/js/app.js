@@ -204,6 +204,7 @@ class BookKingApp {
                     localStorage.removeItem('bookking_timer_elapsed');
                     localStorage.removeItem('bookking_session_start');
                     localStorage.removeItem('bookking_pending_session');
+                    localStorage.removeItem('bookking_session_book_id');
                     localStorage.removeItem('bookking_screen_state');
                     if (this.components.readingTimer) {
                         clearInterval(this.components.readingTimer);
@@ -255,6 +256,7 @@ class BookKingApp {
                 
                 session: () => {
                     const pendingSession = localStorage.getItem('bookking_pending_session');
+                    const savedBookId = localStorage.getItem('bookking_session_book_id');
                     const currentSession = this.components.sessionData;
                     const mainContent = document.querySelector('.main-content');
                     const hasSessionContent = mainContent && mainContent.innerHTML.includes('session-pages-card');
@@ -264,6 +266,7 @@ class BookKingApp {
                         hasCurrentSession: !!currentSession,
                         currentView: this.components.currentView,
                         currentBookId: this.components.currentBookId,
+                        savedBookId: savedBookId,
                         isRenderingNewSession: this.components.isRenderingNewSession,
                         hasSessionContent: hasSessionContent,
                         mainContentLength: mainContent ? mainContent.innerHTML.length : 0
