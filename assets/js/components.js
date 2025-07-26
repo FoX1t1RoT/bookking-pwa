@@ -16,6 +16,7 @@ class BookKingComponents {
         this.readingElapsed = 0;
         this.sessionData = null;
         this.timerVisibilityHandler = null; // For background/foreground timer handling
+        this.originalSessionStartTime = null; // Original session start time for saving
         this.showingArchive = false; // Track whether we're showing archive or active books
         this.currentBookCover = null; // Store selected book cover
         this.init();
@@ -31,11 +32,22 @@ class BookKingComponents {
         // Check if timer was active when app was closed
         const timerActive = localStorage.getItem('bookking_timer_active');
         const timerStartTime = localStorage.getItem('bookking_timer_start');
+        const originalSessionStart = localStorage.getItem('bookking_session_start');
         const savedElapsed = localStorage.getItem('bookking_timer_elapsed');
         
         if (timerActive === 'true' && timerStartTime) {
             // Restore timer state
             this.readingStartTime = new Date(parseInt(timerStartTime));
+            
+            // Restore original session start time (critical for saving session correctly)
+            if (originalSessionStart) {
+                this.originalSessionStartTime = new Date(parseInt(originalSessionStart));
+                console.log('Restored original session start time:', this.originalSessionStartTime);
+            } else {
+                // Fallback to current timer start time
+                this.originalSessionStartTime = new Date(this.readingStartTime);
+                console.log('No original session time found, using current timer start time');
+            }
             
             // Restore elapsed time if available (for paused timers)
             if (savedElapsed) {
@@ -755,11 +767,15 @@ class BookKingComponents {
 
     startReadingTimer() {
         this.readingStartTime = new Date();
+        this.originalSessionStartTime = new Date(this.readingStartTime); // Save original time
         this.readingElapsed = 0;
         
         // Save timer state to localStorage for persistence
         localStorage.setItem('bookking_timer_start', this.readingStartTime.getTime());
+        localStorage.setItem('bookking_session_start', this.originalSessionStartTime.getTime());
         localStorage.setItem('bookking_timer_active', 'true');
+        
+        console.log('Timer started - original session time saved:', this.originalSessionStartTime);
         
         this.startTimerInterval();
         
@@ -863,13 +879,21 @@ class BookKingComponents {
     finishReading() {
         this.stopReadingTimer();
         
-        // Prepare session data
+        // Prepare session data using ORIGINAL session start time
         const finishTime = new Date();
+        const sessionStartTime = this.originalSessionStartTime || this.readingStartTime;
+        
         this.sessionData = {
-            startTime: this.readingStartTime,
+            startTime: sessionStartTime,
             finishTime: finishTime,
             duration: this.readingElapsed
         };
+        
+        console.log('Session prepared for saving:', {
+            originalStart: sessionStartTime,
+            finish: finishTime,
+            duration: this.readingElapsed + ' seconds'
+        });
         
         this.currentView = 'newSession';
         this.renderNewSessionScreen();
@@ -1101,9 +1125,14 @@ class BookKingComponents {
         console.log('Calculated new start time:', this.readingStartTime);
         console.log('Should show elapsed time:', this.readingElapsed, 'seconds from start time');
         
-        // Update localStorage with new start time
+        // Update localStorage with new start time (but keep original session start)
         localStorage.setItem('bookking_timer_start', this.readingStartTime.getTime());
         localStorage.setItem('bookking_timer_active', 'true');
+        
+        // Ensure original session start time is preserved
+        if (this.originalSessionStartTime) {
+            localStorage.setItem('bookking_session_start', this.originalSessionStartTime.getTime());
+        }
         
         // Use our improved timer interval method
         this.startTimerInterval();
@@ -1140,6 +1169,7 @@ class BookKingComponents {
         localStorage.removeItem('bookking_timer_start');
         localStorage.removeItem('bookking_timer_active');
         localStorage.removeItem('bookking_timer_elapsed');
+        localStorage.removeItem('bookking_session_start');
         
         // Clear screen state since reading session is ending
         this.clearScreenState();

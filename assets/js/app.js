@@ -125,13 +125,15 @@ class BookKingApp {
                 check: () => {
                     const active = localStorage.getItem('bookking_timer_active');
                     const start = localStorage.getItem('bookking_timer_start');
+                    const sessionStart = localStorage.getItem('bookking_session_start');
                     const savedElapsed = localStorage.getItem('bookking_timer_elapsed');
                     const currentElapsed = this.components.readingElapsed;
                     const running = !!this.components.readingTimer;
                     
                     console.log('Timer state:', {
                         active: active === 'true',
-                        startTime: start ? new Date(parseInt(start)) : null,
+                        currentStartTime: start ? new Date(parseInt(start)) : null,
+                        originalSessionStart: sessionStart ? new Date(parseInt(sessionStart)) : null,
                         currentElapsed: currentElapsed + ' seconds',
                         savedElapsed: savedElapsed ? savedElapsed + ' seconds' : 'none',
                         intervalRunning: running
@@ -140,6 +142,11 @@ class BookKingApp {
                     if (active === 'true' && start && !savedElapsed) {
                         const realElapsed = Math.floor((Date.now() - parseInt(start)) / 1000);
                         console.log('Real elapsed time (running timer):', realElapsed + ' seconds');
+                    }
+                    
+                    if (sessionStart) {
+                        const totalSessionTime = Math.floor((Date.now() - parseInt(sessionStart)) / 1000);
+                        console.log('Total session time since original start:', totalSessionTime + ' seconds');
                     }
                     
                     if (savedElapsed) {
@@ -195,11 +202,13 @@ class BookKingApp {
                     localStorage.removeItem('bookking_timer_active');
                     localStorage.removeItem('bookking_timer_start');
                     localStorage.removeItem('bookking_timer_elapsed');
+                    localStorage.removeItem('bookking_session_start');
                     localStorage.removeItem('bookking_screen_state');
                     if (this.components.readingTimer) {
                         clearInterval(this.components.readingTimer);
                         this.components.readingTimer = null;
                     }
+                    this.components.originalSessionStartTime = null;
                     console.log('Timer and screen state cleared');
                 }
             };
