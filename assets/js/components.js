@@ -537,14 +537,17 @@ class BookKingComponents {
         } else if (showArchive) {
             headerLeft.innerHTML = `
                 <button class="archive-toggle-button ${this.showingArchive ? 'active' : ''}" id="toggleArchive">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Коробка с крышкой -->
-                        <rect x="4" y="8" width="16" height="12" rx="1" stroke="currentColor" stroke-width="2" fill="none"/>
-                        <rect x="6" y="6" width="12" height="4" rx="1" stroke="currentColor" stroke-width="2" fill="none"/>
-                        <path d="M6 6L4 8" stroke="currentColor" stroke-width="2"/>
-                        <path d="M18 6L20 8" stroke="currentColor" stroke-width="2"/>
-                        <path d="M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Коробка архива с прорезом для носки -->
+                        <!-- Основание коробки -->
+                        <rect x="3" y="8" width="18" height="12" rx="1.5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <!-- Крышка коробки -->
+                        <rect x="3" y="5" width="18" height="6" rx="1.5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <!-- Прорез для носки в центре крышки -->
+                        <rect x="9" y="5" width="6" height="3" rx="0.5" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1"/>
+                        <!-- Декоративные линии на коробке -->
+                        <line x1="6" y1="13" x2="18" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+                        <line x1="6" y1="16" x2="18" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
                     </svg>
                 </button>
             `;

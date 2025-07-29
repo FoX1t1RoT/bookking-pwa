@@ -104,13 +104,13 @@ body {
     text-align: left;
     margin: 10px 0 0 0;
     padding-left: 0 !important;
-    padding-right: 120px !important;
+    padding-right: 140px !important;
     pointer-events: auto;
 }
 
 /* Special styling for Settings header */
 .header-title.settings-header {
-    padding-right: 120px !important;
+    padding-right: 140px !important;
 }
 
 /* Special styling for Add New Book header */
@@ -151,27 +151,28 @@ body {
 .add-button {
     background: var(--accent-color);
     border: none;
-    width: 44px;
-    height: 44px;
-    border-radius: 22px;
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     color: white;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 400;
-    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 2px 12px rgba(0, 122, 255, 0.3);
     transition: all 0.2s ease;
 }
 
 .add-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
 }
 
 .add-button:active {
     transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.5);
 }
 
 /* Main Content */

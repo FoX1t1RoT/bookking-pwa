@@ -842,29 +842,40 @@
     border: none !important;
     color: #007AFF !important;
     box-shadow: none !important;
-    border-radius: 8px !important;
-    padding: 12px;
+    border-radius: 12px !important;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
+    width: 60px;
+    height: 60px;
+    transition: all 0.2s ease;
 }
 
 .archive-toggle-button svg {
     color: #007AFF !important;
     fill: none !important;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
 }
 
 .archive-toggle-button.active {
-    background: var(--accent-color);
-    color: white;
+    background: var(--accent-color) !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3) !important;
+}
+
+.archive-toggle-button.active svg {
+    color: white !important;
 }
 
 .archive-toggle-button:hover {
-    background-color: rgba(0, 122, 255, 0.1);
+    background-color: rgba(0, 122, 255, 0.1) !important;
+    transform: scale(1.02);
+}
+
+.archive-toggle-button:active {
+    transform: scale(0.98);
 }
 
 .reading-stats-card {
