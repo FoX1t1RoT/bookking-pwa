@@ -243,7 +243,7 @@ body {
     border-radius: 16px;
     padding: 20px !important;
     margin-bottom: 32px !important;
-    border: 2px solid var(--accent-color) !important;
+    border: none !important;
     box-shadow: 0 4px 16px var(--shadow-color) !important;
     position: relative;
     transition: all 0.3s ease;
@@ -252,7 +252,6 @@ body {
 .book-group:hover {
     transform: translateY(-3px) !important;
     box-shadow: 0 8px 24px var(--shadow-color) !important;
-    border-color: #0099ff !important;
 }
 
 .book-group .book-card {
