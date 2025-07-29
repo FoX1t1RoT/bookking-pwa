@@ -258,13 +258,27 @@ body {
 .book-group .book-card {
     margin-bottom: 12px !important;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
-    background: var(--bg-secondary) !important;
+    background: var(--bg-tertiary) !important;
     border: 1px solid rgba(255, 255, 255, 0.05) !important;
     padding: 16px !important;
+    position: relative;
 }
 
 .book-group .book-card:last-child {
     margin-bottom: 0 !important;
+}
+
+/* Разделительная линия между книгами */
+.book-group .book-card:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 96px; /* Отступ: 16px padding + 64px обложка + 16px gap */
+    right: 16px; /* Отступ от правого края */
+    height: 1px;
+    background: var(--border-color);
+    opacity: 0.6;
+    border-radius: 0.5px;
 }
 
 .book-group .book-card:hover {
