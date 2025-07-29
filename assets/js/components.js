@@ -1967,7 +1967,21 @@ class BookKingComponents {
         
         const container = document.getElementById('booksContainer');
         
-        container.innerHTML = books.map(book => this.createBookCard(book)).join('');
+        // Группируем книги по 2 штуки
+        const groups = [];
+        const groupSize = 2;
+        
+        for (let i = 0; i < books.length; i += groupSize) {
+            const group = books.slice(i, i + groupSize);
+            groups.push(group);
+        }
+        
+        // Создаем HTML для каждой группы
+        container.innerHTML = groups.map(group => {
+            const groupCards = group.map(book => this.createBookCard(book)).join('');
+            return `<div class="book-group">${groupCards}</div>`;
+        }).join('');
+        
         if (books.length > 0) {
             setTimeout(() => this.bindBookCardEvents(), 50);
         }
@@ -2846,12 +2860,24 @@ class BookKingComponents {
         const container = document.querySelector('.main-content');
         if (!container) return;
         const archivedBooks = this.storage.getBooks().filter(b => b.status === 'archived');
+        // Группируем архивированные книги
+        const archiveGroups = [];
+        const groupSize = 2;
+        
+        for (let i = 0; i < archivedBooks.length; i += groupSize) {
+            const group = archivedBooks.slice(i, i + groupSize);
+            archiveGroups.push(group);
+        }
+        
         container.innerHTML = `
             <div class="archive-screen">
                 <h2 class="archive-title">Archive</h2>
                 <div class="archive-list">
                     ${archivedBooks.length === 0 ? `<div class="empty-state"><p class="empty-message">No finished books yet</p></div>` :
-                        archivedBooks.map(book => this.createBookCard(book)).join('')
+                        archiveGroups.map(group => {
+                            const groupCards = group.map(book => this.createBookCard(book)).join('');
+                            return `<div class="book-group">${groupCards}</div>`;
+                        }).join('')
                     }
                 </div>
             </div>

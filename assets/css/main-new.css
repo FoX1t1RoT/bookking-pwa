@@ -239,36 +239,38 @@ body {
 
 /* Book Groups */
 .book-group {
-    background: var(--card-bg);
+    background: var(--bg-tertiary) !important;
     border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 28px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 3px 12px var(--shadow-color);
+    padding: 20px !important;
+    margin-bottom: 32px !important;
+    border: 2px solid var(--accent-color) !important;
+    box-shadow: 0 4px 16px var(--shadow-color) !important;
     position: relative;
     transition: all 0.3s ease;
 }
 
 .book-group:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px var(--shadow-color);
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 24px var(--shadow-color) !important;
+    border-color: #0099ff !important;
 }
 
 .book-group .book-card {
-    margin-bottom: 12px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    background: var(--bg-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 12px !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+    background: var(--bg-secondary) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 16px !important;
 }
 
 .book-group .book-card:last-child {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
 }
 
 .book-group .book-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    background: var(--bg-tertiary);
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    background: var(--bg-tertiary) !important;
 }
 
 /* Добавляем индикатор группы */
