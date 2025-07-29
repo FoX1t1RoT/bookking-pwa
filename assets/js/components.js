@@ -103,8 +103,13 @@ class BookKingComponents {
         };
         
         // Also save bookId separately for recovery of reading and new session views
-        if ((this.currentView === 'newSession' || this.currentView === 'reading') && this.currentBookId) {
+        // ЗАЩИТА: Также сохраняем bookId если есть активный таймер, независимо от currentView
+        const hasActiveTimer = this.readingTimer || localStorage.getItem('bookking_timer_active') === 'true' || localStorage.getItem('bookking_timer_elapsed');
+        
+        if (((this.currentView === 'newSession' || this.currentView === 'reading') && this.currentBookId) || 
+            (hasActiveTimer && this.currentBookId)) {
             localStorage.setItem('bookking_session_book_id', this.currentBookId);
+            console.log('📝 Saved bookId for recovery:', this.currentBookId, 'reason:', hasActiveTimer ? 'active timer' : 'reading view');
         }
         
         localStorage.setItem('bookking_screen_state', JSON.stringify(screenState));
@@ -1409,12 +1414,24 @@ class BookKingComponents {
     pauseReading() {
         console.log('pauseReading() called - timer running:', !!this.readingTimer);
         
+        // ЗАЩИТА: Принудительно восстанавливаем правильное состояние при паузе
+        // На случай если блокировка экрана нарушила состояние
+        if (this.readingTimer && this.currentView !== 'reading') {
+            console.log('🛡️ PROTECTION: Fixing currentView during pause (was:', this.currentView, ')');
+            this.currentView = 'reading';
+        }
+        
         if (this.readingTimer) {
             // Pause timer but keep state for resuming
             this.pauseReadingTimer();
             
             // ВАЖНО: Сохраняем состояние экрана чтения при паузе
             // чтобы можно было восстановить сессию после возврата из фона
+            console.log('🔍 About to save screen state during pause:', {
+                currentView: this.currentView,
+                currentBookId: this.currentBookId,
+                readingElapsed: this.readingElapsed
+            });
             this.saveScreenState();
             console.log('Screen state saved during timer pause');
             

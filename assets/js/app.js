@@ -459,6 +459,18 @@ class BookKingApp {
             return;
         }
         
+        // Debug logging for complex scenarios
+        const timerActive = localStorage.getItem('bookking_timer_active') === 'true';
+        const timerPaused = localStorage.getItem('bookking_timer_elapsed');
+        const screenState = localStorage.getItem('bookking_screen_state');
+        console.log('🔍 handleAppVisible called with state:', {
+            timerActive,
+            timerPaused: !!timerPaused,
+            hasScreenState: !!screenState,
+            currentView: this.components?.currentView,
+            currentBookId: this.components?.currentBookId
+        });
+        
         // Try to restore screen state first
         if (this.components && this.components.restoreScreenState()) {
             // Screen state was restored - load the appropriate screen
