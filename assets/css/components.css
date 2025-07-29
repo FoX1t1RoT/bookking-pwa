@@ -847,16 +847,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px; /* Уменьшенная ширина */
-    height: 44px; /* Уменьшенная высота */
+    width: 36px; /* Еще меньше ширина */
+    height: 36px; /* Еще меньше высота */
     transition: all 0.2s ease;
 }
 
 .archive-toggle-button svg {
     color: var(--text-secondary) !important; /* Убрана постоянная синяя подсветка */
     fill: none !important;
-    width: 28px; /* Уменьшенный размер иконки */
-    height: 28px;
+    width: 24px; /* Еще меньше размер иконки */
+    height: 24px;
 }
 
 .archive-toggle-button.active {
@@ -1687,7 +1687,7 @@
 }
 .plus-icon {
     color: #007AFF !important;
-    font-size: 24px !important; /* Уменьшенный размер плюсика */
+    font-size: 20px !important; /* Еще меньше размер плюсика */
     font-weight: 400 !important;
     line-height: 1;
     display: flex;

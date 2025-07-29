@@ -52,13 +52,13 @@ body {
 .app-header {
     display: flex;
     align-items: center;
-    padding: 8px 16px; /* Уменьшенные отступы */
-    padding-top: max(16px, calc(env(safe-area-inset-top) + 6px)); /* Меньше отступ сверху */
+    padding: 4px 16px; /* Еще меньше отступы */
+    padding-top: max(12px, calc(env(safe-area-inset-top) + 4px)); /* Еще меньше отступ сверху */
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
     background-color: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
-    min-height: 32px; /* Уменьшенная минимальная высота */
+    min-height: 28px; /* Еще меньше минимальная высота */
     position: sticky;
     top: 0;
     z-index: 100;
@@ -151,15 +151,15 @@ body {
 .add-button {
     background: var(--accent-color);
     border: none;
-    width: 44px; /* Уменьшенная ширина */
-    height: 44px; /* Уменьшенная высота */
-    border-radius: 22px; /* Пропорциональный радиус */
+    width: 36px; /* Еще меньше ширина */
+    height: 36px; /* Еще меньше высота */
+    border-radius: 18px; /* Пропорциональный радиус */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     color: white;
-    font-size: 24px; /* Уменьшенный размер плюсика */
+    font-size: 20px; /* Еще меньше размер плюсика */
     font-weight: 300;
     box-shadow: 0 2px 12px rgba(0, 122, 255, 0.3);
     transition: all 0.2s ease;
