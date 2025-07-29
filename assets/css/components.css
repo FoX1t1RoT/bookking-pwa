@@ -840,23 +840,23 @@
 .archive-toggle-button {
     background: none !important;
     border: none !important;
-    color: #007AFF !important;
+    color: var(--text-secondary) !important; /* Убрана постоянная синяя подсветка */
     box-shadow: none !important;
     border-radius: 12px !important;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 70px;
+    width: 44px; /* Уменьшенная ширина */
+    height: 44px; /* Уменьшенная высота */
     transition: all 0.2s ease;
 }
 
 .archive-toggle-button svg {
-    color: #007AFF !important;
+    color: var(--text-secondary) !important; /* Убрана постоянная синяя подсветка */
     fill: none !important;
-    width: 32px;
-    height: 32px;
+    width: 28px; /* Уменьшенный размер иконки */
+    height: 28px;
 }
 
 .archive-toggle-button.active {
@@ -1687,7 +1687,7 @@
 }
 .plus-icon {
     color: #007AFF !important;
-    font-size: 28px !important;
+    font-size: 24px !important; /* Уменьшенный размер плюсика */
     font-weight: 400 !important;
     line-height: 1;
     display: flex;
