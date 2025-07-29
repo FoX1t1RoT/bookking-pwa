@@ -58,7 +58,7 @@ body {
     padding-right: max(16px, env(safe-area-inset-right));
     background-color: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
-    min-height: 56px;
+    min-height: 36px;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -104,13 +104,13 @@ body {
     text-align: left;
     margin: 10px 0 0 0;
     padding-left: 0 !important;
-    padding-right: 100px !important;
+    padding-right: 80px !important;
     pointer-events: auto;
 }
 
 /* Special styling for Settings header */
 .header-title.settings-header {
-    padding-right: 100px !important;
+    padding-right: 80px !important;
 }
 
 /* Special styling for Add New Book header */
@@ -151,9 +151,9 @@ body {
 .add-button {
     background: var(--accent-color);
     border: none;
-    width: 60px;
-    height: 60px;
-    border-radius: 30px;
+    width: 50px;
+    height: 70px;
+    border-radius: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
