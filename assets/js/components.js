@@ -542,8 +542,8 @@ class BookKingComponents {
                         <rect x="3.5" y="7" width="17" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
                         <!-- Крышка коробки (чуть больше основания) -->
                         <rect x="2.5" y="6" width="19" height="4" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                        <!-- Прорез/ручка в верхней части крышки -->
-                        <rect x="10" y="0" width="4" height="1.5" rx="0.75" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                        <!-- Прорез/ручка на основании коробки -->
+                        <rect x="10" y="12" width="4" height="1.5" rx="0.75" stroke="currentColor" stroke-width="1.2" fill="none"/>
                     </svg>
                 </button>
             `;
