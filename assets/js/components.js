@@ -961,22 +961,62 @@ class BookKingComponents {
         }
         
         this.timerVisibilityHandler = () => {
-            if (!document.hidden && this.readingStartTime) {
+            if (!document.hidden) {
                 // Don't interfere if we're rendering new session
                 if (this.isRenderingNewSession) {
                     console.log('Skipping timer visibility handler - new session is being rendered');
                     return;
                 }
                 
-                // App became visible - recalculate time and resume updates
-                this.updateTimerFromStartTime();
+                // Check for any timer session (active or paused)
+                const timerActive = localStorage.getItem('bookking_timer_active') === 'true';
+                const timerPaused = localStorage.getItem('bookking_timer_elapsed');
+                const originalSessionStart = localStorage.getItem('bookking_session_start');
+                const sessionBookId = localStorage.getItem('bookking_session_book_id');
                 
-                // Restart interval if timer is active
-                if (localStorage.getItem('bookking_timer_active') === 'true') {
-                    this.startTimerInterval();
+                if ((timerActive || timerPaused) && originalSessionStart && sessionBookId) {
+                    console.log('App became visible with timer session detected');
+                    
+                    // КРИТИЧНО: Принудительно восстанавливаем экран чтения
+                    const book = this.storage.getBooks().find(b => b.id === sessionBookId);
+                    if (book) {
+                        // Устанавливаем правильные состояния
+                        this.currentView = 'reading';
+                        this.currentBookId = sessionBookId;
+                        this.currentTab = 'read';
+                        
+                        // Восстанавливаем данные таймера
+                        if (originalSessionStart) {
+                            this.originalSessionStartTime = new Date(parseInt(originalSessionStart));
+                        }
+                        
+                        if (timerPaused) {
+                            // Восстанавливаем паузу таймера
+                            this.readingElapsed = parseInt(timerPaused);
+                            console.log('Restored paused timer with elapsed:', this.readingElapsed, 'seconds');
+                        } else if (timerActive && this.readingStartTime) {
+                            // App became visible - recalculate time and resume updates
+                            this.updateTimerFromStartTime();
+                            // Restart interval if timer is active
+                            this.startTimerInterval();
+                            console.log('Restored active timer - elapsed:', this.readingElapsed, 'seconds');
+                        }
+                        
+                        // ПРИНУДИТЕЛЬНО переключаемся на вкладку чтения и рендерим экран
+                        this.switchTab('read');
+                        this.renderReadingScreen(book);
+                        
+                        console.log('Forced reading screen restoration completed');
+                        return; // Важно: выходим, чтобы избежать конфликтов
+                    }
                 }
                 
-                console.log('Timer resumed from background - elapsed:', this.readingElapsed, 'seconds');
+                // Стандартная логика для уже активного таймера на экране чтения
+                if (this.readingStartTime && timerActive) {
+                    this.updateTimerFromStartTime();
+                    this.startTimerInterval();
+                    console.log('Timer resumed from background - elapsed:', this.readingElapsed, 'seconds');
+                }
             }
         };
         
@@ -1018,8 +1058,34 @@ class BookKingComponents {
         // Pause button - will be managed dynamically by pause/resume methods
         const pauseButton = document.getElementById('pauseReading');
         if (pauseButton) {
-            // Remove any existing listeners and set initial state
-            pauseButton.onclick = () => this.pauseReading();
+            // Проверяем состояние таймера при рендеринге экрана
+            const timerPaused = localStorage.getItem('bookking_timer_elapsed');
+            const timerActive = localStorage.getItem('bookking_timer_active') === 'true';
+            
+            if (timerPaused && !timerActive) {
+                // Таймер на паузе - показываем кнопку Resume
+                pauseButton.textContent = 'Resume';
+                pauseButton.classList.remove('pause-button');
+                pauseButton.classList.add('resume-button');
+                pauseButton.onclick = () => this.resumeReading();
+                
+                // Восстанавливаем отображение паузы таймера
+                if (this.readingElapsed || timerPaused) {
+                    const elapsed = this.readingElapsed || parseInt(timerPaused);
+                    this.readingElapsed = elapsed;
+                    this.updateTimerDisplay();
+                    console.log('Restored paused timer display:', elapsed, 'seconds');
+                }
+                
+                console.log('Rendered reading screen with paused timer - button set to Resume');
+            } else {
+                // Таймер активен или не запущен - показываем кнопку Pause
+                pauseButton.textContent = 'Pause';
+                pauseButton.classList.remove('resume-button');
+                pauseButton.classList.add('pause-button');
+                pauseButton.onclick = () => this.pauseReading();
+                console.log('Rendered reading screen with active timer - button set to Pause');
+            }
         }
     }
 
