@@ -259,7 +259,7 @@ body {
     margin-bottom: 12px !important;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
     background: var(--bg-tertiary) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
     padding: 16px !important;
     position: relative;
 }
@@ -387,7 +387,7 @@ body {
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    border: 1px solid var(--border-color);
+    border: none;
     display: flex;
     align-items: center;
     gap: 16px;
