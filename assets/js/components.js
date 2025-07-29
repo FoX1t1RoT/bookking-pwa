@@ -949,7 +949,19 @@ class BookKingComponents {
     updateTimerFromStartTime() {
         if (!this.readingStartTime) return;
         
-        // Always calculate from start time - works even after background
+        // Check if timer is paused - don't override paused elapsed time
+        const timerPaused = localStorage.getItem('bookking_timer_elapsed');
+        const timerActive = localStorage.getItem('bookking_timer_active') === 'true';
+        
+        if (timerPaused && !timerActive) {
+            // Timer is paused - don't recalculate time, just update display
+            this.readingElapsed = parseInt(timerPaused);
+            this.updateTimerDisplay();
+            console.log('Timer is paused - displaying paused time:', this.readingElapsed, 'seconds');
+            return;
+        }
+        
+        // Timer is active - calculate from start time
         this.readingElapsed = Math.floor((new Date() - this.readingStartTime) / 1000);
         this.updateTimerDisplay();
     }
@@ -1028,6 +1040,13 @@ class BookKingComponents {
                 pauseButton.classList.remove('pause-button');
                 pauseButton.classList.add('resume-button');
                 pauseButton.onclick = () => this.resumeReading();
+                
+                // Ensure paused time is displayed correctly
+                if (this.readingElapsed) {
+                    this.updateTimerDisplay();
+                    console.log('Displayed paused timer:', this.readingElapsed, 'seconds');
+                }
+                
                 console.log('Initial button state: Resume (timer paused)');
             } else {
                 // Timer is active or new - show Pause button

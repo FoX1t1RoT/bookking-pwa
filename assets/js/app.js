@@ -482,8 +482,17 @@ class BookKingApp {
                             this.components.startTimerInterval();
                             console.log('Resumed reading screen with active timer');
                         } else if (timerPaused) {
-                            // Timer is paused - just restore the reading screen with pause state
-                            console.log('Restored reading screen with paused timer');
+                            // Timer is paused - restore the reading screen with pause state
+                            // Make sure we restore timer data properly for paused session
+                            const originalSessionStart = localStorage.getItem('bookking_session_start');
+                            if (originalSessionStart) {
+                                this.components.originalSessionStartTime = new Date(parseInt(originalSessionStart));
+                            }
+                            this.components.readingElapsed = parseInt(timerPaused);
+                            
+                            // ВАЖНО: Не устанавливаем readingStartTime для паузы, 
+                            // иначе таймер может автоматически запуститься
+                            console.log('Restored reading screen with paused timer - elapsed:', timerPaused, 'seconds');
                         }
                         return;
                     }
@@ -511,7 +520,35 @@ class BookKingApp {
             // For other screen states, load the appropriate screen
             this.components.loadCurrentScreen();
         } else {
-            // No saved state - just refresh current screen
+            // No saved state - check if we have a paused timer that needs recovery
+            const timerPaused = localStorage.getItem('bookking_timer_elapsed');
+            const originalSessionStart = localStorage.getItem('bookking_session_start');
+            const sessionBookId = localStorage.getItem('bookking_session_book_id');
+            
+            if (timerPaused && originalSessionStart && sessionBookId) {
+                console.log('No saved screen state, but found paused timer - restoring reading screen');
+                
+                const book = this.components.storage.getBooks().find(b => b.id === sessionBookId);
+                if (book) {
+                    // Restore reading session state
+                    this.components.currentView = 'reading';
+                    this.components.currentBookId = sessionBookId;
+                    this.components.currentTab = 'read';
+                    
+                    // Restore timer data for paused session
+                    this.components.originalSessionStartTime = new Date(parseInt(originalSessionStart));
+                    this.components.readingElapsed = parseInt(timerPaused);
+                    
+                    // Switch to read tab and render reading screen
+                    this.components.switchTab('read');
+                    this.components.renderReadingScreen(book);
+                    
+                    console.log('Successfully restored paused timer session from fallback logic');
+                    return;
+                }
+            }
+            
+            // No saved state and no paused timer - just refresh current screen
             if (this.components && this.components.currentTab) {
                 this.components.loadCurrentScreen();
             }
