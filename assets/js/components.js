@@ -538,12 +538,12 @@ class BookKingComponents {
             headerLeft.innerHTML = `
                 <button class="archive-toggle-button ${this.showingArchive ? 'active' : ''}" id="toggleArchive">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Простая коробка архива -->
-                        <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
-                        <!-- Крышка коробки -->
-                        <rect x="3" y="6" width="18" height="4" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
-                        <!-- Центральная ручка/прорез -->
-                        <rect x="10" y="6" width="4" height="2" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <!-- Основание коробки архива -->
+                        <rect x="3.5" y="7" width="17" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <!-- Крышка коробки (чуть больше основания) -->
+                        <rect x="2.5" y="6" width="19" height="4" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <!-- Прорез/ручка ниже на крышке -->
+                        <rect x="10" y="8" width="4" height="1.5" rx="0.75" stroke="currentColor" stroke-width="1.2" fill="none"/>
                     </svg>
                 </button>
             `;
