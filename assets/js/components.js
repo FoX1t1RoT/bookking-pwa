@@ -440,8 +440,8 @@ class BookKingComponents {
         
         // Создаем HTML для каждой группы
         return groups.map(group => {
-            const groupCards = group.map(book => this.createBookCard(book)).join('');
-            return `<div class="book-group">${groupCards}</div>`;
+            const groupItems = group.map(book => this.createBookItem(book)).join('');
+            return `<div class="book-group">${groupItems}</div>`;
         }).join('');
     }
 
@@ -621,8 +621,8 @@ class BookKingComponents {
         
         // Создаем HTML для каждой группы
         container.innerHTML = groups.map(group => {
-            const groupCards = group.map(book => this.createBookCard(book)).join('');
-            return `<div class="book-group">${groupCards}</div>`;
+            const groupItems = group.map(book => this.createBookItem(book)).join('');
+            return `<div class="book-group">${groupItems}</div>`;
         }).join('');
         
         this.bindBookCardEvents();
@@ -665,8 +665,46 @@ class BookKingComponents {
         `;
     }
 
+    createBookItem(book) {
+        // Calculate progress: 0% when on first page, 100% when on last page  
+        const progress = book.lastPage > book.firstPage 
+            ? Math.round((book.currentPage - book.firstPage) / (book.lastPage - book.firstPage) * 100)
+            : 0;
+        
+        // Calculate pages remaining
+        const pagesRemaining = book.lastPage - book.currentPage;
+        const isFinished = book.status === 'finished' || progress >= 100;
+        
+        // Check if book has a custom cover
+        const coverContent = book.cover 
+            ? `<img src="${book.cover}" alt="${book.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`
+            : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2"/>
+               </svg>`;
+        
+        return `
+            <div class="book-item" data-book-id="${book.id}">
+                <div class="book-cover">
+                    ${coverContent}
+                </div>
+                <div class="book-info">
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-author">${book.author}</div>
+                    <div class="book-progress-container">
+                        <div class="book-progress-text">${isFinished ? 'Completed' : `${pagesRemaining} pages to go`}</div>
+                        <div class="book-progress-bar">
+                            <div class="book-progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     bindBookCardEvents() {
-        document.querySelectorAll('.book-card').forEach(card => {
+        // Bind events for both book-card and book-item elements
+        document.querySelectorAll('.book-card, .book-item').forEach(card => {
             card.addEventListener('click', (e) => {
                 const bookId = e.currentTarget.getAttribute('data-book-id');
                 this.showBookDetails(bookId);
@@ -1978,8 +2016,8 @@ class BookKingComponents {
         
         // Создаем HTML для каждой группы
         container.innerHTML = groups.map(group => {
-            const groupCards = group.map(book => this.createBookCard(book)).join('');
-            return `<div class="book-group">${groupCards}</div>`;
+            const groupItems = group.map(book => this.createBookItem(book)).join('');
+            return `<div class="book-group">${groupItems}</div>`;
         }).join('');
         
         if (books.length > 0) {
@@ -2874,10 +2912,10 @@ class BookKingComponents {
                 <h2 class="archive-title">Archive</h2>
                 <div class="archive-list">
                     ${archivedBooks.length === 0 ? `<div class="empty-state"><p class="empty-message">No finished books yet</p></div>` :
-                        archiveGroups.map(group => {
-                            const groupCards = group.map(book => this.createBookCard(book)).join('');
-                            return `<div class="book-group">${groupCards}</div>`;
-                        }).join('')
+                                                 archiveGroups.map(group => {
+                             const groupItems = group.map(book => this.createBookItem(book)).join('');
+                             return `<div class="book-group">${groupItems}</div>`;
+                         }).join('')
                     }
                 </div>
             </div>

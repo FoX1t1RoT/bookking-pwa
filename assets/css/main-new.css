@@ -254,36 +254,35 @@ body {
     box-shadow: none !important;
 }
 
-.book-group .book-card {
-    margin-bottom: 12px !important;
-    box-shadow: none !important;
-    background: var(--bg-tertiary) !important;
-    border: none !important;
-    padding: 16px !important;
+/* Book Items inside groups - no card wrapper */
+.book-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
     position: relative;
 }
 
-.book-group .book-card:last-child {
-    margin-bottom: 0 !important;
+.book-item:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.02);
+    padding-left: 4px;
+    padding-right: 4px;
+    border-radius: 8px;
 }
 
 /* Разделительная линия между книгами */
-.book-group .book-card:not(:last-child)::after {
+.book-item:not(:last-child)::after {
     content: '';
     position: absolute;
-    bottom: -6px;
-    left: 96px; /* Отступ: 16px padding + 64px обложка + 16px gap */
-    right: 16px; /* Отступ от правого края */
+    bottom: 0;
+    left: 80px; /* Отступ: 64px обложка + 16px gap */
+    right: 0;
     height: 1px;
     background: var(--border-color);
     opacity: 0.6;
-    border-radius: 0.5px;
-}
-
-.book-group .book-card:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: none !important;
-    background: var(--bg-tertiary) !important;
 }
 
 /* Добавляем индикатор группы */
