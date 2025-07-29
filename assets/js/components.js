@@ -428,7 +428,21 @@ class BookKingComponents {
 
     renderBooksContent() {
         const books = this.getCurrentBooks();
-        return books.map(book => this.createBookCard(book)).join('');
+        
+        // Группируем книги по 2-3 штуки
+        const groups = [];
+        const groupSize = 2; // Можно изменить на 3 для больших групп
+        
+        for (let i = 0; i < books.length; i += groupSize) {
+            const group = books.slice(i, i + groupSize);
+            groups.push(group);
+        }
+        
+        // Создаем HTML для каждой группы
+        return groups.map(group => {
+            const groupCards = group.map(book => this.createBookCard(book)).join('');
+            return `<div class="book-group">${groupCards}</div>`;
+        }).join('');
     }
 
 
@@ -595,7 +609,22 @@ class BookKingComponents {
         if (!container) return;
 
         const books = this.getCurrentBooks();
-        container.innerHTML = books.map(book => this.createBookCard(book)).join('');
+        
+        // Группируем книги по 2-3 штуки
+        const groups = [];
+        const groupSize = 2; // Можно изменить на 3 для больших групп
+        
+        for (let i = 0; i < books.length; i += groupSize) {
+            const group = books.slice(i, i + groupSize);
+            groups.push(group);
+        }
+        
+        // Создаем HTML для каждой группы
+        container.innerHTML = groups.map(group => {
+            const groupCards = group.map(book => this.createBookCard(book)).join('');
+            return `<div class="book-group">${groupCards}</div>`;
+        }).join('');
+        
         this.bindBookCardEvents();
     }
 

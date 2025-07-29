@@ -237,6 +237,52 @@ body {
     min-height: 300px;
 }
 
+/* Book Groups */
+.book-group {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 28px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 3px 12px var(--shadow-color);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.book-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+.book-group .book-card {
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.book-group .book-card:last-child {
+    margin-bottom: 0;
+}
+
+.book-group .book-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: var(--bg-tertiary);
+}
+
+/* Добавляем индикатор группы */
+.book-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 16px;
+    width: 32px;
+    height: 3px;
+    background: var(--accent-color);
+    border-radius: 0 0 2px 2px;
+}
+
 .empty-state {
     display: flex;
     flex-direction: column;
