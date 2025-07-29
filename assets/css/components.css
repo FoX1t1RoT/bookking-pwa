@@ -842,16 +842,20 @@
     border: none !important;
     color: #007AFF !important;
     box-shadow: none !important;
-    border-radius: 0 !important;
-    padding: 8px;
+    border-radius: 8px !important;
+    padding: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
 }
 
 .archive-toggle-button svg {
     color: #007AFF !important;
     fill: none !important;
+    width: 24px;
+    height: 24px;
 }
 
 .archive-toggle-button.active {
