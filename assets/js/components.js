@@ -30,31 +30,46 @@ class BookKingComponents {
     }
     
     restoreTimerIfActive() {
-        // Check if timer was active when app was closed
+        // Check if timer was active or paused when app was closed
         const timerActive = localStorage.getItem('bookking_timer_active');
         const timerStartTime = localStorage.getItem('bookking_timer_start');
         const originalSessionStart = localStorage.getItem('bookking_session_start');
         const savedElapsed = localStorage.getItem('bookking_timer_elapsed');
         
-        if (timerActive === 'true' && timerStartTime) {
-            // Restore timer state
-            this.readingStartTime = new Date(parseInt(timerStartTime));
+        // Восстанавливаем состояние таймера если он был активен ИЛИ на паузе
+        const hasActiveTimer = timerActive === 'true' && timerStartTime;
+        const hasPausedTimer = savedElapsed && originalSessionStart;
+        
+        if (hasActiveTimer || hasPausedTimer) {
+            if (hasActiveTimer) {
+                // Restore running timer state
+                this.readingStartTime = new Date(parseInt(timerStartTime));
+                console.log('Restoring active timer');
+            }
             
             // Restore original session start time (critical for saving session correctly)
             if (originalSessionStart) {
                 this.originalSessionStartTime = new Date(parseInt(originalSessionStart));
                 console.log('Restored original session start time:', this.originalSessionStartTime);
-            } else {
+            } else if (timerStartTime) {
                 // Fallback to current timer start time
-                this.originalSessionStartTime = new Date(this.readingStartTime);
-                console.log('No original session time found, using current timer start time');
+                this.originalSessionStartTime = new Date(parseInt(timerStartTime));
+                this.readingStartTime = new Date(parseInt(timerStartTime));
+                console.log('No original session time found, using timer start time');
             }
             
             // Restore elapsed time if available (for paused timers)
             if (savedElapsed) {
                 this.readingElapsed = parseInt(savedElapsed);
                 console.log('Restored paused timer with elapsed time:', this.readingElapsed, 'seconds');
-            } else {
+                
+                // For paused timer, we need to ensure we have a proper readingStartTime
+                if (!this.readingStartTime && this.originalSessionStartTime) {
+                    // Calculate start time from original session start and elapsed time
+                    this.readingStartTime = new Date(this.originalSessionStartTime.getTime() + (this.readingElapsed * 1000));
+                    console.log('Calculated readingStartTime for paused timer:', this.readingStartTime);
+                }
+            } else if (hasActiveTimer) {
                 // Calculate elapsed time for running timer
                 this.updateTimerFromStartTime();
             }
@@ -63,7 +78,19 @@ class BookKingComponents {
             // But bind the visibility handler for when they do
             this.bindTimerVisibilityHandler();
             
-            console.log('Timer state restored from localStorage - elapsed:', this.readingElapsed, 'seconds');
+            // Попытаемся восстановить currentBookId для таймера сессии
+            const sessionBookId = localStorage.getItem('bookking_session_book_id');
+            if (sessionBookId && !this.currentBookId) {
+                this.currentBookId = sessionBookId;
+                console.log('Restored currentBookId from session storage:', sessionBookId);
+            }
+            
+            console.log('Timer state restored from localStorage:', {
+                active: hasActiveTimer,
+                paused: hasPausedTimer,
+                elapsed: this.readingElapsed + ' seconds',
+                bookId: this.currentBookId
+            });
         }
     }
     
@@ -893,6 +920,11 @@ class BookKingComponents {
         localStorage.setItem('bookking_session_start', this.originalSessionStartTime.getTime());
         localStorage.setItem('bookking_timer_active', 'true');
         
+        // ВАЖНО: Сохраняем bookId для восстановления сессии после возврата из фона
+        if (this.currentBookId) {
+            localStorage.setItem('bookking_session_book_id', this.currentBookId);
+        }
+        
         console.log('Timer started - original session time saved:', this.originalSessionStartTime);
         
         this.startTimerInterval();
@@ -1339,6 +1371,12 @@ class BookKingComponents {
         if (this.readingTimer) {
             // Pause timer but keep state for resuming
             this.pauseReadingTimer();
+            
+            // ВАЖНО: Сохраняем состояние экрана чтения при паузе
+            // чтобы можно было восстановить сессию после возврата из фона
+            this.saveScreenState();
+            console.log('Screen state saved during timer pause');
+            
             const pauseButton = document.getElementById('pauseReading');
             if (pauseButton) {
                 pauseButton.textContent = 'Resume';

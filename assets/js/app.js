@@ -465,21 +465,28 @@ class BookKingApp {
             console.log('Restoring screen state after background return');
             
             // Handle different view types
-            if (this.components.currentView === 'reading' && 
-                localStorage.getItem('bookking_timer_active') === 'true') {
+            if (this.components.currentView === 'reading') {
+                const timerActive = localStorage.getItem('bookking_timer_active') === 'true';
+                const timerPaused = localStorage.getItem('bookking_timer_elapsed');
                 
-                const book = this.components.storage.getBooks().find(b => b.id === this.components.currentBookId);
-                if (book) {
-                    // Switch to read tab and render reading screen
-                    this.components.switchTab('read');
-                    this.components.renderReadingScreen(book);
-                    
-                    // Resume timer updates if timer was active
-                    if (this.components.readingStartTime) {
-                        this.components.startTimerInterval();
-                        console.log('Resumed reading screen with active timer');
+                // Восстанавливаем экран чтения если таймер активен ИЛИ на паузе
+                if (timerActive || timerPaused) {
+                    const book = this.components.storage.getBooks().find(b => b.id === this.components.currentBookId);
+                    if (book) {
+                        // Switch to read tab and render reading screen
+                        this.components.switchTab('read');
+                        this.components.renderReadingScreen(book);
+                        
+                        if (timerActive && this.components.readingStartTime) {
+                            // Resume timer updates if timer was active (running)
+                            this.components.startTimerInterval();
+                            console.log('Resumed reading screen with active timer');
+                        } else if (timerPaused) {
+                            // Timer is paused - just restore the reading screen with pause state
+                            console.log('Restored reading screen with paused timer');
+                        }
+                        return;
                     }
-                    return;
                 }
             } else if (this.components.currentView === 'newSession') {
                 console.log('Detected newSession view - avoiding screen override');
