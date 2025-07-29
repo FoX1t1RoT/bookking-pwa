@@ -473,27 +473,40 @@ class BookKingApp {
                 if (timerActive || timerPaused) {
                     const book = this.components.storage.getBooks().find(b => b.id === this.components.currentBookId);
                     if (book) {
-                        // Switch to read tab and render reading screen
-                        this.components.switchTab('read');
-                        this.components.renderReadingScreen(book);
-                        
+                        // Restore timer data BEFORE switching tabs to preserve state
                         if (timerActive && this.components.readingStartTime) {
                             // Resume timer updates if timer was active (running)
                             this.components.startTimerInterval();
                             console.log('Resumed reading screen with active timer');
                         } else if (timerPaused) {
-                            // Timer is paused - restore the reading screen with pause state
-                            // Make sure we restore timer data properly for paused session
+                            // Timer is paused - restore timer data for paused session
                             const originalSessionStart = localStorage.getItem('bookking_session_start');
                             if (originalSessionStart) {
                                 this.components.originalSessionStartTime = new Date(parseInt(originalSessionStart));
                             }
                             this.components.readingElapsed = parseInt(timerPaused);
                             
-                            // ВАЖНО: Не устанавливаем readingStartTime для паузы, 
-                            // иначе таймер может автоматически запуститься
-                            console.log('Restored reading screen with paused timer - elapsed:', timerPaused, 'seconds');
+                            console.log('Restored paused timer data - elapsed:', timerPaused, 'seconds');
                         }
+                        
+                        // Switch to read tab (loadCurrentScreen will skip re-render for reading view)
+                        this.components.switchTab('read');
+                        
+                        // Only render reading screen if content is not already there
+                        const mainContent = document.querySelector('.main-content');
+                        const hasReadingContent = mainContent && mainContent.innerHTML.includes('reading-screen');
+                        
+                        if (!hasReadingContent) {
+                            console.log('Reading screen content not found - rendering...');
+                            this.components.renderReadingScreen(book);
+                        } else {
+                            console.log('Reading screen content already exists - preserving state');
+                            // Just update the timer display to show current state
+                            if (this.components.readingElapsed) {
+                                this.components.updateTimerDisplay();
+                            }
+                        }
+                        
                         return;
                     }
                 }
@@ -539,8 +552,10 @@ class BookKingApp {
                     this.components.originalSessionStartTime = new Date(parseInt(originalSessionStart));
                     this.components.readingElapsed = parseInt(timerPaused);
                     
-                    // Switch to read tab and render reading screen
+                    // Switch to read tab (loadCurrentScreen will skip re-render for reading view)
                     this.components.switchTab('read');
+                    
+                    // Always render reading screen in fallback since we likely don't have content
                     this.components.renderReadingScreen(book);
                     
                     console.log('Successfully restored paused timer session from fallback logic');

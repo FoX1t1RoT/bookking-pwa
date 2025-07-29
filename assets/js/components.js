@@ -299,6 +299,11 @@ class BookKingComponents {
             case 'read':
                 if (this.currentView === 'addBook') {
                     this.renderAddBookScreen();
+                } else if (this.currentView === 'reading') {
+                    // ВАЖНО: Если мы уже на экране чтения, НЕ перерисовываем его
+                    // Это предотвращает сброс состояния паузы таймера
+                    console.log('Already on reading screen - skipping re-render to preserve timer state');
+                    return;
                 } else if (this.currentView === 'newSession') {
                     console.log('Loading new session screen from loadCurrentScreen');
                     console.log('Current state:', {
