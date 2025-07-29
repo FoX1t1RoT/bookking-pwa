@@ -63,12 +63,9 @@ class BookKingComponents {
                 this.readingElapsed = parseInt(savedElapsed);
                 console.log('Restored paused timer with elapsed time:', this.readingElapsed, 'seconds');
                 
-                // For paused timer, we need to ensure we have a proper readingStartTime
-                if (!this.readingStartTime && this.originalSessionStartTime) {
-                    // Calculate start time from original session start and elapsed time
-                    this.readingStartTime = new Date(this.originalSessionStartTime.getTime() + (this.readingElapsed * 1000));
-                    console.log('Calculated readingStartTime for paused timer:', this.readingStartTime);
-                }
+                // ВАЖНО: НЕ устанавливаем readingStartTime для паузы таймера!
+                // readingStartTime должен быть только для активного таймера
+                console.log('Paused timer restored - readingStartTime NOT set to prevent auto-resume');
             } else if (hasActiveTimer) {
                 // Calculate elapsed time for running timer
                 this.updateTimerFromStartTime();
