@@ -429,20 +429,13 @@ class BookKingComponents {
     renderBooksContent() {
         const books = this.getCurrentBooks();
         
-        // Группируем книги по 2-3 штуки
-        const groups = [];
-        const groupSize = 2; // Можно изменить на 3 для больших групп
-        
-        for (let i = 0; i < books.length; i += groupSize) {
-            const group = books.slice(i, i + groupSize);
-            groups.push(group);
+        // Все книги в одном блоке - неограниченное количество
+        if (books.length === 0) {
+            return '';
         }
         
-        // Создаем HTML для каждой группы
-        return groups.map(group => {
-            const groupItems = group.map(book => this.createBookItem(book)).join('');
-            return `<div class="book-group">${groupItems}</div>`;
-        }).join('');
+        const allBookItems = books.map(book => this.createBookItem(book)).join('');
+        return `<div class="book-group">${allBookItems}</div>`;
     }
 
 

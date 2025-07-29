@@ -241,7 +241,7 @@ body {
 .book-group {
     background: var(--bg-tertiary) !important;
     border-radius: 16px;
-    padding: 20px !important;
+    padding: 12px 20px !important; /* Уменьшенные отступы сверху/снизу */
     margin-bottom: 32px !important;
     border: none !important;
     box-shadow: none !important;
@@ -259,7 +259,7 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px 0;
+    padding: 12px 0; /* Уменьшенные отступы для компактности */
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
