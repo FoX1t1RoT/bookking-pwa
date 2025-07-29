@@ -842,6 +842,7 @@
     border: 1px solid #007AFF !important;
     color: #007AFF !important;
     box-shadow: none !important;
+    outline: none !important;
     border-radius: 12px !important;
     padding: 0;
     display: flex;
@@ -862,7 +863,7 @@
 .archive-toggle-button.active {
     background: var(--accent-color) !important;
     color: white !important;
-    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3) !important;
+    box-shadow: none !important;
 }
 
 .archive-toggle-button.active svg {
@@ -876,6 +877,11 @@
 
 .archive-toggle-button:active {
     transform: scale(0.98);
+    outline: none !important;
+}
+
+.archive-toggle-button:focus {
+    outline: none !important;
 }
 
 .reading-stats-card {
