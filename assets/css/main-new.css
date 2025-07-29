@@ -244,19 +244,19 @@ body {
     padding: 20px !important;
     margin-bottom: 32px !important;
     border: none !important;
-    box-shadow: 0 4px 16px var(--shadow-color) !important;
+    box-shadow: none !important;
     position: relative;
     transition: all 0.3s ease;
 }
 
 .book-group:hover {
     transform: translateY(-3px) !important;
-    box-shadow: 0 8px 24px var(--shadow-color) !important;
+    box-shadow: none !important;
 }
 
 .book-group .book-card {
     margin-bottom: 12px !important;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
     background: var(--bg-tertiary) !important;
     border: none !important;
     padding: 16px !important;
@@ -282,7 +282,7 @@ body {
 
 .book-group .book-card:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: none !important;
     background: var(--bg-tertiary) !important;
 }
 
@@ -390,14 +390,14 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
-    box-shadow: 0 2px 8px var(--shadow-color);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: none;
+    transition: transform 0.2s ease;
     cursor: pointer;
 }
 
 .book-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--shadow-color);
+    box-shadow: none;
 }
 
 .book-cover {
