@@ -652,12 +652,16 @@ class BookKingComponents {
                     ${coverContent}
                 </div>
                 <div class="book-info">
-                    <div class="book-title">${book.title}</div>
-                    <div class="book-author">${book.author}</div>
-                    <div class="book-progress-container">
-                        <div class="book-progress-text">${isFinished ? 'Completed' : `${pagesRemaining} pages to go`}</div>
-                        <div class="book-progress-bar">
-                            <div class="book-progress-fill" style="width: ${progress}%"></div>
+                    <div class="book-info-top">
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${book.author}</div>
+                    </div>
+                    <div class="book-info-bottom">
+                        <div class="book-progress-container">
+                            <div class="book-progress-text">${isFinished ? 'Completed' : `${pagesRemaining} pages to go`}</div>
+                            <div class="book-progress-bar">
+                                <div class="book-progress-fill" style="width: ${progress}%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -689,12 +693,16 @@ class BookKingComponents {
                     ${coverContent}
                 </div>
                 <div class="book-info">
-                    <div class="book-title">${book.title}</div>
-                    <div class="book-author">${book.author}</div>
-                    <div class="book-progress-container">
-                        <div class="book-progress-text">${isFinished ? 'Completed' : `${pagesRemaining} pages to go`}</div>
-                        <div class="book-progress-bar">
-                            <div class="book-progress-fill" style="width: ${progress}%"></div>
+                    <div class="book-info-top">
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${book.author}</div>
+                    </div>
+                    <div class="book-info-bottom">
+                        <div class="book-progress-container">
+                            <div class="book-progress-text">${isFinished ? 'Completed' : `${pagesRemaining} pages to go`}</div>
+                            <div class="book-progress-bar">
+                                <div class="book-progress-fill" style="width: ${progress}%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
