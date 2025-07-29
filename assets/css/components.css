@@ -839,24 +839,24 @@
 /* Archive Toggle Button in Header */
 .archive-toggle-button {
     background: none !important;
-    border: none !important;
-    color: var(--text-secondary) !important; /* Убрана постоянная синяя подсветка */
+    border: 1px solid #007AFF !important;
+    color: #007AFF !important;
     box-shadow: none !important;
     border-radius: 12px !important;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px; /* Еще меньше ширина */
-    height: 36px; /* Еще меньше высота */
+    width: 40px;
+    height: 48px;
     transition: all 0.2s ease;
 }
 
 .archive-toggle-button svg {
-    color: var(--text-secondary) !important; /* Убрана постоянная синяя подсветка */
+    color: #007AFF !important;
     fill: none !important;
-    width: 24px; /* Еще меньше размер иконки */
-    height: 24px;
+    width: 28px;
+    height: 28px;
 }
 
 .archive-toggle-button.active {
@@ -870,7 +870,7 @@
 }
 
 .archive-toggle-button:hover {
-    background-color: rgba(0, 122, 255, 0.1) !important;
+    background-color: transparent !important;
     transform: scale(1.02);
 }
 
@@ -1687,7 +1687,7 @@
 }
 .plus-icon {
     color: #007AFF !important;
-    font-size: 20px !important; /* Еще меньше размер плюсика */
+    font-size: 24px !important;
     font-weight: 400 !important;
     line-height: 1;
     display: flex;
