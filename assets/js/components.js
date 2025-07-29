@@ -258,18 +258,21 @@ class BookKingComponents {
         if (tabName === 'read') {
             // DON'T reset currentBookId if we have an active timer session
             const timerActive = localStorage.getItem('bookking_timer_active') === 'true';
+            const timerPaused = localStorage.getItem('bookking_timer_elapsed');
             const hasSessionBookId = localStorage.getItem('bookking_session_book_id');
             
             console.log('Tab switch to read:', {
                 timerActive,
+                timerPaused: !!timerPaused,
                 hasSessionBookId,
                 currentBookId: this.currentBookId,
                 currentView: this.currentView
             });
             
-            if (timerActive || hasSessionBookId) {
-                console.log('PROTECTION: Preserving currentBookId during tab switch - active session detected');
-                console.log('Current bookId:', this.currentBookId, 'Timer active:', timerActive, 'Saved bookId:', hasSessionBookId);
+            // Preserve currentBookId if timer is active, paused, or we have a session
+            if (timerActive || timerPaused || hasSessionBookId) {
+                console.log('PROTECTION: Preserving currentBookId during tab switch - active/paused session detected');
+                console.log('Current bookId:', this.currentBookId, 'Timer active:', timerActive, 'Timer paused:', !!timerPaused, 'Saved bookId:', hasSessionBookId);
                 // Don't reset currentBookId - preserve it for active session
             } else {
                 console.log('No active session - resetting currentBookId');
@@ -1448,6 +1451,9 @@ class BookKingComponents {
             // Save elapsed time to localStorage for persistence
             localStorage.setItem('bookking_timer_elapsed', this.readingElapsed.toString());
         }
+        
+        // КРИТИЧНО: Очищаем active флаг, чтобы система знала что таймер на паузе
+        localStorage.removeItem('bookking_timer_active');
         
         console.log('Timer paused at', this.readingElapsed, 'seconds');
     }
