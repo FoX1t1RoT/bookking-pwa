@@ -323,12 +323,12 @@ body {
 .book-card {
     background: var(--card-bg);
     border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
     border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     box-shadow: 0 2px 8px var(--shadow-color);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
@@ -340,10 +340,10 @@ body {
 }
 
 .book-cover {
-    width: 48px;
-    height: 64px;
+    width: 64px;
+    height: 85px;
     background: #48484a;
-    border-radius: 6px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;

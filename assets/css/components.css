@@ -116,8 +116,8 @@
 
 .cover-container {
     position: relative;
-    width: 70px;
-    height: 90px;
+    width: 90px;
+    height: 115px;
     flex-shrink: 0;
 }
 
@@ -265,8 +265,8 @@
     }
     
     .cover-placeholder {
-        width: 60px;
-        height: 75px;
+        width: 80px;
+        height: 100px;
     }
     
     .form-input {
@@ -745,10 +745,10 @@
 }
 
 .book-cover-large {
-    width: 80px;
-    height: 100px;
+    width: 100px;
+    height: 130px;
     background: #2C2C2E;
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
